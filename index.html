@@ -48,7 +48,6 @@ button{
 </div>
 
 <script>
-// Login fonksiyonu
 function login(){
   const u = document.getElementById("user").value.trim();
   const p = document.getElementById("pass").value.trim();
@@ -66,18 +65,15 @@ function login(){
   }
 }
 
-// Başlangıç users set (sadece ilk deploy için)
+// Başlangıç users
 if(!localStorage.getItem("users")){
   const initUsers = [
-    {user:"34iett", pass:"mousab12", page:"owner.html", name:"WEB ISLEMCI"},
-    {user:"duzce", pass:"1234", page:"owner.html", name:"Patron"},
-    {user:"amiri1", pass:"1111", page:"amiri.html", name:"Hareket Amiri 1"},
-    {user:"sofor1", pass:"3333", page:"sofor.html", name:"Şoför 1"}
+    {user:"34iett", pass:"mousab12", page:"owner.html", name:"WEB ISLEMCI"}
   ];
   localStorage.setItem("users", JSON.stringify(initUsers));
 }
 
-// Başlangıç seferler (opsiyonel boş array)
+// Başlangıç seferler
 if(!localStorage.getItem("seferler")){
   localStorage.setItem("seferler", JSON.stringify([]));
 }
