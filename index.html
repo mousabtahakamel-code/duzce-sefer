@@ -2,11 +2,11 @@
 <html lang="tr">
 <head>
 <meta charset="UTF-8">
-<title>Login</title>
+<title>Giriş</title>
 <style>
 body{
   font-family:Arial;
-  background:#1e40af;
+  background:linear-gradient(135deg,#1e40af,#2563eb);
   height:100vh;
   margin:0;
   display:flex;
@@ -17,25 +17,30 @@ body{
   background:white;
   padding:30px;
   width:320px;
-  border-radius:10px;
+  border-radius:12px;
+  box-shadow:0 10px 25px rgba(0,0,0,.2);
 }
+h2{text-align:center}
 input,button{
   width:100%;
   padding:12px;
   margin-top:12px;
+  border-radius:6px;
 }
+input{border:1px solid #ccc}
 button{
   background:#2563eb;
   color:white;
   border:none;
+  font-weight:bold;
 }
-#msg{color:red;text-align:center}
+#msg{color:red;text-align:center;margin-top:10px}
 </style>
 </head>
 <body>
 
 <div class="card">
-  <h2>Giriş</h2>
+  <h2>Düzce Ulaşım</h2>
   <input id="user" placeholder="Kullanıcı adı">
   <input id="pass" type="password" placeholder="Şifre">
   <button type="button" onclick="login()">Giriş Yap</button>
@@ -43,29 +48,38 @@ button{
 </div>
 
 <script>
-const users = [
-  {user:"34iett", pass:"mousab12", page:"owner.html"},
-  {user:"duzce", pass:"1234", page:"owner.html"},
-  {user:"amiri1", pass:"1111", page:"amiri.html"},
-  {user:"sofor1", pass:"3333", page:"sofor.html"},
-  {user:"34ietthareket", pass:"mousab12", page:"amiri.html"},
-  {user:"polatalemdar", pass:"kurtlarvadisi", page:"sofor.html"}
-  {user:"Gojira", pass:"GOJIRAEDIT", page:"owner.html"}
-];
-
+// Login fonksiyonu
 function login(){
-  const u = document.getElementById("user").value;
-  const p = document.getElementById("pass").value;
+  const u = document.getElementById("user").value.trim();
+  const p = document.getElementById("pass").value.trim();
   const msg = document.getElementById("msg");
 
-  const found = users.find(x => x.user===u && x.pass===p);
+  const users = JSON.parse(localStorage.getItem("users")) || [];
+
+  const found = users.find(x=>x.user===u && x.pass===p);
 
   if(found){
     localStorage.setItem("aktifKullanici", JSON.stringify(found));
     window.location.href = found.page;
   } else {
-    msg.innerText = "Hatalı giriş";
+    msg.innerText = "Hatalı giriş ❌";
   }
+}
+
+// Başlangıç users set (sadece ilk deploy için)
+if(!localStorage.getItem("users")){
+  const initUsers = [
+    {user:"34iett", pass:"mousab12", page:"owner.html", name:"WEB ISLEMCI"},
+    {user:"duzce", pass:"1234", page:"owner.html", name:"Patron"},
+    {user:"amiri1", pass:"1111", page:"amiri.html", name:"Hareket Amiri 1"},
+    {user:"sofor1", pass:"3333", page:"sofor.html", name:"Şoför 1"}
+  ];
+  localStorage.setItem("users", JSON.stringify(initUsers));
+}
+
+// Başlangıç seferler (opsiyonel boş array)
+if(!localStorage.getItem("seferler")){
+  localStorage.setItem("seferler", JSON.stringify([]));
 }
 </script>
 
