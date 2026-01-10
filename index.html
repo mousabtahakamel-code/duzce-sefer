@@ -2,46 +2,80 @@
 <html lang="tr">
 <head>
 <meta charset="UTF-8">
-<title>Giriş</title>
+<title>Hareket Amiri</title>
 <style>
-body{font-family:Arial;background:linear-gradient(135deg,#1e40af,#2563eb);height:100vh;margin:0;display:flex;align-items:center;justify-content:center;}
-.card{background:white;padding:30px;width:320px;border-radius:12px;box-shadow:0 10px 25px rgba(0,0,0,.2);}
-h2{text-align:center}
-input,button{width:100%;padding:12px;margin-top:12px;border-radius:6px;}
-input{border:1px solid #ccc}
-button{background:#2563eb;color:white;border:none;font-weight:bold}
-#msg{color:red;text-align:center;margin-top:10px}
+body{font-family:Arial;background:#eef2ff;margin:0;padding:20px;}
+.card{background:white;max-width:500px;margin:auto;padding:20px;border-radius:10px;}
+select,button{width:100%;padding:10px;margin-top:10px;}
+button{background:#2563eb;color:white;border:none;border-radius:6px;}
+#seferler{margin-top:15px;background:#f1f5f9;padding:10px;border-radius:6px;min-height:50px;}
 </style>
 </head>
 <body>
 
 <div class="card">
-<h2>Düzce Ulaşım</h2>
-<input id="user" placeholder="Kullanıcı adı">
-<input id="pass" type="password" placeholder="Şifre">
-<button type="button" onclick="login()">Giriş Yap</button>
-<div id="msg"></div>
+<h2>Hareket Amiri</h2>
+
+<select id="hat">
+<option>1 - Üniversite Ring</option>
+<option>30 - Bahçeşehir Ring</option>
+<option>12 - Yeşiltepe - Otogar - Jandarma</option>
+<option>25 - Sarayyeri - Otogar</option>
+<option>26 - Akşemsettin - Otogar</option>
+<option>46 - Mamure - Otogar</option>
+<option>43 - Düzce Üniversitesi - Bahçeşehir</option>
+</select>
+
+<select id="arac">
+<option>Mavi Karsan Atak</option>
+<option>Kırmızı Karsan Atak</option>
+<option>TCV Karat</option>
+<option>MAN Lions City G</option>
+<option>Mercedes Conecto 2024</option>
+<option>Otokar Sultan</option>
+<option>BMC Procity TR</option>
+</select>
+
+<select id="sofor"></select>
+
+<button onclick="kaydet()">Sefer Kaydet</button>
+<p id="msg"></p>
+
+<div id="seferler"></div>
+<button onclick="cikisYap()" style="margin-top:10px;background:#f87171;padding:10px;color:white;border:none;border-radius:6px;">Çıkış Yap</button>
 </div>
 
 <script>
-async function login(){
-  const u=document.getElementById("user").value.trim();
-  const p=document.getElementById("pass").value.trim();
-  const msg=document.getElementById("msg");
-  try{
-    const res=await fetch('/api/users.json');
-    const users=await res.json();
-    const found=users.find(x=>x.user===u && x.pass===p);
-    if(found){
-      localStorage.setItem("aktifKullanici",JSON.stringify(found));
-      window.location.href=found.page;
-    } else {
-      msg.innerText="Hatalı giriş ❌";
-    }
-  }catch(err){
-    msg.innerText="Sunucuya bağlanamadı ❌";
-  }
+let seferler=[];
+let users=[];
+async function fetchUsers(){ const res=await fetch('/api/users.json'); users=await res.json(); return users;}
+async function fetchSeferler(){ const res=await fetch('/api/seferler.json'); seferler=await res.json(); return seferler;}
+async function updateSeferler(){await fetch('/api/seferler.json',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(seferler,null,2)});}
+async function init(){
+  await fetchUsers();
+  const soforler=users.filter(u=>u.page==="sofor.html");
+  soforler.forEach(s=>sofor.innerHTML+=`<option value="${s.user}">${s.name}</option>`);
+  await fetchSeferler();
+  listele();
 }
+function listele(){
+  seferlerDiv=document.getElementById("seferler");
+  seferlerDiv.innerHTML="";
+  seferler.forEach(s=>{seferlerDiv.innerHTML+=`• ${s.hat} | ${s.arac} | ${s.sofor} | ${s.saat}<br>`;});
+}
+async function kaydet(){
+  seferler.push({
+    hat:hat.value,
+    arac:arac.value,
+    sofor:sofor.value,
+    saat:new Date().toLocaleTimeString("tr-TR",{hour:"2-digit",minute:"2-digit"})
+  });
+  await updateSeferler();
+  msg.innerText="Sefer kaydedildi ✅";
+  listele();
+}
+function cikisYap(){localStorage.removeItem("aktifKullanici"); window.location.href="index.html";}
+init();
 </script>
 
 </body>
