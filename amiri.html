@@ -28,6 +28,7 @@ button{
   border:none;
   border-radius:6px;
 }
+#seferler{margin-top:15px; background:#f1f5f9; padding:10px; border-radius:6px; min-height:50px;}
 </style>
 </head>
 <body>
@@ -56,17 +57,36 @@ button{
 </select>
 
 <select id="sofor">
-  <option value="sofor1">Şoför 1</option>
+  <!-- Şoförler listesi -->
 </select>
 
 <button onclick="kaydet()">Sefer Kaydet</button>
 <p id="msg"></p>
-<button onclick="cikisYap()" style="background:#f87171;">Çıkış Yap</button>
+
+<div id="seferler"></div>
+<button onclick="cikisYap()" style="margin-top:10px; background:#f87171; padding:10px; color:white; border:none; border-radius:6px;">Çıkış Yap</button>
 </div>
 
 <script>
 let seferler = JSON.parse(localStorage.getItem("seferler")) || [];
+let users = JSON.parse(localStorage.getItem("users")) || [];
+let aktifSoforler = users.filter(u=>u.page==="sofor.html");
 
+// Şoför select doldur
+const soforSelect = document.getElementById("sofor");
+aktifSoforler.forEach(s=>soforSelect.innerHTML += `<option value="${s.user}">${s.name}</option>`);
+
+// Seferleri listele
+function listeleSeferler(){
+  seferlerDiv = document.getElementById("seferler");
+  seferlerDiv.innerHTML = "";
+  seferler.forEach(s=>{
+    seferlerDiv.innerHTML += `• ${s.hat} | ${s.arac} | ${s.sofor} | ${s.saat}<br>`;
+  });
+}
+listeleSeferler();
+
+// Sefer ekleme
 function kaydet(){
   seferler.push({
     hat: hat.value,
@@ -76,8 +96,10 @@ function kaydet(){
   });
   localStorage.setItem("seferler", JSON.stringify(seferler));
   msg.innerText = "Sefer kaydedildi ✅";
+  listeleSeferler();
 }
 
+// Çıkış
 function cikisYap(){
   localStorage.removeItem("aktifKullanici");
   window.location.href="index.html";
@@ -86,3 +108,4 @@ function cikisYap(){
 
 </body>
 </html>
+
