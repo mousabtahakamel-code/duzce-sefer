@@ -1,0 +1,51 @@
+<script>
+if (!["owner","amiri"].includes(localStorage.getItem("role")))
+  location.href="index.html";
+</script>
+
+<h1>Hareket Amiri Paneli</h1>
+
+<label>Şoför</label>
+<select id="sofor">
+  <option value="sofor1">ŞOFÖR 1</option>
+  <option value="sofor2">ŞOFÖR 2</option>
+</select>
+
+<label>Araç</label>
+<select id="arac">
+  <option>Mavi Karsan Atak</option>
+  <option>Kırmızı Karsan Atak</option>
+  <option>TCV Karat</option>
+  <option>MAN Lion’s City G</option>
+  <option>Mercedes-Benz Conecto 2024</option>
+  <option>Otokar Sultan</option>
+  <option>BMC Procity TR</option>
+</select>
+
+<label>Hat</label>
+<select id="hat">
+  <option>1 - Üniversite Ring</option>
+  <option>30 - Bahçeşehir Ring</option>
+  <option>12 - Yeşiltepe - Otogar - Jandarma</option>
+  <option>25 - Sarayyeri - Otogar</option>
+  <option>26 - Akşemsettin - Otogar</option>
+  <option>46 - Mamure - Otogar</option>
+  <option>43 - Düzce Üniversitesi - Bahçeşehir</option>
+</select>
+
+<label>Kaçıncı Araç</label>
+<input id="sira" type="number" min="1">
+
+<button onclick="ata()">Sefer Ata</button>
+
+<script>
+function ata(){
+  const sefer = {
+    arac: arac.value,
+    hat: hat.value,
+    sira: sira.value
+  };
+  localStorage.setItem("sefer_"+sofor.value, JSON.stringify(sefer));
+  alert("Sefer atandı");
+}
+</script>

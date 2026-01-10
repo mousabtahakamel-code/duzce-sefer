@@ -1,0 +1,23 @@
+<script>
+if (localStorage.getItem("role") !== "sofor")
+  location.href="index.html";
+</script>
+
+<h1>Şoför Paneli</h1>
+
+<div id="info"></div>
+
+<script>
+const u = localStorage.getItem("username");
+const s = JSON.parse(localStorage.getItem("sefer_"+u));
+
+if (s) {
+  info.innerHTML = `
+    <p><b>Araç:</b> ${s.arac}</p>
+    <p><b>Hat:</b> ${s.hat}</p>
+    <p><b>Araç Sırası:</b> ${s.sira}</p>
+  `;
+} else {
+  info.innerText = "Size atanmış sefer yok.";
+}
+</script>

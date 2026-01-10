@@ -1,0 +1,30 @@
+<h2>Giriş</h2>
+
+<input id="user" placeholder="Kullanıcı adı">
+<input id="pass" type="password" placeholder="Şifre">
+<button onclick="login()">Giriş Yap</button>
+
+<p id="err"></p>
+
+<script>
+async function login() {
+  const u = user.value;
+  const p = pass.value;
+
+  const res = await fetch(`/api/login?username=${u}&password=${p}`);
+  if (!res.ok) {
+    err.innerText = "Hatalı giriş";
+    return;
+  }
+
+  const d = await res.json();
+  localStorage.setItem("username", d.username);
+  localStorage.setItem("role", d.role);
+  localStorage.setItem("name", d.name);
+
+  if (d.role === "owner") location.href = "owner.html";
+  if (d.role === "amiri") location.href = "amiri.html";
+  if (d.role === "admin") location.href = "admin.html";
+  if (d.role === "sofor") location.href = "sofor.html";
+}
+</script>

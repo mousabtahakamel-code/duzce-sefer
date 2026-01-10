@@ -1,0 +1,22 @@
+<script>
+if (localStorage.getItem("role") !== "owner") location.href="index.html";
+</script>
+
+<h1>Owner Paneli</h1>
+<p>Hoş geldin: <b id="name"></b></p>
+
+<ul>
+  <li><a href="amiri.html">Hareket Amiri Paneli</a></li>
+  <li><a href="admin.html">Admin Paneli</a></li>
+</ul>
+
+<button onclick="logout()">Çıkış</button>
+
+<script>
+name.innerText = localStorage.getItem("name");
+function logout(){
+  localStorage.clear();
+  location.href="index.html";
+}
+</script>
+
