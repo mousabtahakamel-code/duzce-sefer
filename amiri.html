@@ -1,9 +1,37 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Hareket Amiri</title>
+<title>Hareket Amiri</title>
+<style>
+body{
+  font-family:Arial;
+  background:#eef2ff;
+  margin:0;
+  padding:20px;
+}
+.card{
+  background:white;
+  max-width:500px;
+  margin:auto;
+  padding:20px;
+  border-radius:10px;
+}
+select,button{
+  width:100%;
+  padding:10px;
+  margin-top:10px;
+}
+button{
+  background:#2563eb;
+  color:white;
+  border:none;
+  border-radius:6px;
+}
+</style>
 </head>
 <body>
+
+<div class="card">
 <h2>Hareket Amiri</h2>
 
 <select id="hat">
@@ -28,14 +56,14 @@
 
 <select id="sofor">
   <option value="sofor1">Şoför 1</option>
-  <option value="sofor2">Şoför 2</option>
 </select>
 
 <button onclick="kaydet()">Sefer Kaydet</button>
 <p id="msg"></p>
+</div>
 
 <script>
-function kaydet() {
+function kaydet(){
   const s = JSON.parse(localStorage.getItem("seferler")) || [];
   s.push({
     hat: hat.value,
@@ -44,9 +72,15 @@ function kaydet() {
     saat: new Date().toLocaleTimeString("tr-TR",{hour:"2-digit",minute:"2-digit"})
   });
   localStorage.setItem("seferler", JSON.stringify(s));
-  msg.innerText = "Sefer kaydedildi";
+  msg.innerText = "Sefer kaydedildi ✅";
 }
+</script>
+
+</body>
+</html>
+
 </script>
 </body>
 </html>
+
 
