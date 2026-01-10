@@ -1,12 +1,43 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Owner</title>
+<meta charset="UTF-8">
+<title>Owner</title>
+<style>
+body{
+  font-family:Arial;
+  background:#f1f5f9;
+  margin:0;
+  padding:20px;
+}
+.box{
+  background:white;
+  padding:20px;
+  border-radius:10px;
+  max-width:600px;
+  margin:auto;
+  box-shadow:0 5px 15px rgba(0,0,0,.1);
+}
+h2,h3{color:#1e40af}
+select,input,button{
+  width:100%;
+  padding:10px;
+  margin-top:10px;
+}
+button{
+  background:#1e40af;
+  color:white;
+  border:none;
+  border-radius:6px;
+}
+</style>
 </head>
 <body>
+
+<div class="box">
 <h2>Owner Paneli</h2>
 
-<h3>Seferler</h3>
+<h3>Sefer Listesi</h3>
 <div id="liste"></div>
 
 <h3>Şifre Değiştir</h3>
@@ -14,26 +45,27 @@
 <input id="newPass" placeholder="Yeni şifre">
 <button onclick="degistir()">Güncelle</button>
 <p id="msg"></p>
+</div>
 
 <script>
 const users = JSON.parse(localStorage.getItem("users")) || [];
 const seferler = JSON.parse(localStorage.getItem("seferler")) || [];
 
-seferler.forEach(s=>{
-  liste.innerHTML+=`${s.hat} - ${s.arac} - ${s.sofor}<br>`;
+users.forEach(u=>{
+  userSelect.innerHTML += `<option value="${u.user}">${u.name}</option>`;
 });
 
-users.forEach(u=>{
-  userSelect.innerHTML+=`<option value="${u.user}">${u.name}</option>`;
+seferler.forEach(s=>{
+  liste.innerHTML += `• ${s.hat} | ${s.arac} | ${s.sofor}<br>`;
 });
 
 function degistir(){
-  const u = userSelect.value;
-  const i = users.findIndex(x=>x.user===u);
+  const i = users.findIndex(x=>x.user===userSelect.value);
   users[i].pass = newPass.value;
-  localStorage.setItem("users",JSON.stringify(users));
-  msg.innerText="Şifre değişti";
+  localStorage.setItem("users", JSON.stringify(users));
+  msg.innerText = "Şifre güncellendi ✅";
 }
 </script>
+
 </body>
 </html>
