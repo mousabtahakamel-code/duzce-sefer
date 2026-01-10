@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html>
+<html lang="tr">
 <head>
 <meta charset="UTF-8">
-<title>Owner</title>
+<title>Owner Paneli</title>
 <style>
 body{
   font-family:Arial;
@@ -14,7 +14,7 @@ body{
   background:white;
   padding:20px;
   border-radius:10px;
-  max-width:600px;
+  max-width:700px;
   margin:auto;
   box-shadow:0 5px 15px rgba(0,0,0,.1);
 }
@@ -23,13 +23,16 @@ select,input,button{
   width:100%;
   padding:10px;
   margin-top:10px;
+  border-radius:6px;
+  border:1px solid #ccc;
 }
 button{
   background:#1e40af;
   color:white;
   border:none;
-  border-radius:6px;
+  font-weight:bold;
 }
+p{margin-top:5px;}
 </style>
 </head>
 <body>
@@ -38,34 +41,97 @@ button{
 <h2>Owner Paneli</h2>
 
 <h3>Sefer Listesi</h3>
-<div id="liste"></div>
+<div id="liste" style="background:#eef; padding:10px; border-radius:6px; min-height:50px;"></div>
 
 <h3>Şifre Değiştir</h3>
 <select id="userSelect"></select>
 <input id="newPass" placeholder="Yeni şifre">
 <button onclick="degistir()">Güncelle</button>
-<p id="msg"></p>
+<p id="msg" style="color:red;"></p>
+
+<hr style="margin:20px 0;">
+
+<h3>Yeni Kullanıcı Ekle</h3>
+<input id="newUser" placeholder="Kullanıcı adı">
+<input id="newName" placeholder="İsim Soyisim">
+<input id="newPassAdd" placeholder="Şifre">
+<select id="roleSelect">
+  <option value="owner">Owner</option>
+  <option value="amiri">Hareket Amiri</option>
+  <option value="sofor">Şoför</option>
+</select>
+<button onclick="yeniKullanici()">Ekle</button>
+<p id="msgAdd" style="color:green;"></p>
+
 </div>
 
 <script>
+// Mevcut kullanıcılar
 const users = JSON.parse(localStorage.getItem("users")) || [];
 const seferler = JSON.parse(localStorage.getItem("seferler")) || [];
 
-users.forEach(u=>{
-  userSelect.innerHTML += `<option value="${u.user}">${u.name}</option>`;
-});
+// Kullanıcı seçim listesi doldur
+function doldurUserSelect(){
+  userSelect.innerHTML = "";
+  users.forEach(u=>{
+    userSelect.innerHTML += `<option value="${u.user}">${u.name} (${u.user})</option>`;
+  });
+}
 
-seferler.forEach(s=>{
-  liste.innerHTML += `• ${s.hat} | ${s.arac} | ${s.sofor}<br>`;
-});
+// Seferleri göster
+function listeleSeferler(){
+  liste.innerHTML = "";
+  seferler.forEach(s=>{
+    liste.innerHTML += `• ${s.hat} | ${s.arac} | ${s.sofor}<br>`;
+  });
+}
 
+doldurUserSelect();
+listeleSeferler();
+
+// Şifre değiştirme
 function degistir(){
   const i = users.findIndex(x=>x.user===userSelect.value);
-  users[i].pass = newPass.value;
+  const pass = newPass.value.trim();
+  if(!pass){ msg.innerText="Yeni şifre boş olamaz"; return; }
+
+  users[i].pass = pass;
   localStorage.setItem("users", JSON.stringify(users));
-  msg.innerText = "Şifre güncellendi ✅";
+  msg.innerText="Şifre güncellendi ✅";
+  newPass.value="";
+}
+
+// Yeni kullanıcı ekleme
+function yeniKullanici(){
+  const user = newUser.value.trim();
+  const name = newName.value.trim();
+  const pass = newPassAdd.value.trim();
+  const role = roleSelect.value;
+
+  if(!user || !name || !pass){
+    msgAdd.innerText="Tüm alanları doldurun ❌";
+    return;
+  }
+
+  // sayfa rolüne göre belirle
+  const page = role==="owner" ? "owner.html" : role==="amiri" ? "amiri.html" : "sofor.html";
+
+  // kullanıcıyı ekle
+  users.push({user, pass, page, name});
+  localStorage.setItem("users", JSON.stringify(users));
+
+  msgAdd.innerText=`Kullanıcı eklendi ✅ (${user})`;
+
+  // inputları temizle
+  newUser.value = "";
+  newName.value = "";
+  newPassAdd.value = "";
+
+  // selecti güncelle
+  doldurUserSelect();
 }
 </script>
 
 </body>
 </html>
+
