@@ -2,13 +2,21 @@
 <html lang="tr">
 <head>
 <meta charset="UTF-8">
-<title>Şoför</title>
+<title>Şoför Paneli</title>
 <style>
 body{font-family:Arial;background:#f8fafc;margin:0;padding:20px;}
 .card{background:white;max-width:400px;margin:auto;padding:20px;border-radius:10px;text-align:center;}
 </style>
 </head>
 <body>
+
+<script>
+const aktif=JSON.parse(localStorage.getItem("aktifKullanici"));
+if(!aktif || aktif.page!=="sofor.html"){
+  alert("Bu sayfaya giriş yetkiniz yok!");
+  window.location.href="index.html";
+}
+</script>
 
 <div class="card">
 <h2>Görevim</h2>
@@ -17,10 +25,9 @@ body{font-family:Arial;background:#f8fafc;margin:0;padding:20px;}
 </div>
 
 <script>
-const aktif=JSON.parse(localStorage.getItem("aktifKullanici"));
 let seferler=[];
-async function fetchSeferler(){ const res=await fetch('/api/seferler.json'); seferler=await res.json();}
-async function init(){ await fetchSeferler(); const g=seferler.filter(x=>x.sofor===aktif.user).pop(); gorev.innerHTML=g?`<b>${g.hat}</b><br>${g.arac}<br>${g.sofor} | ${g.saat}`:"Görev yok"; }
+async function fetchSeferler(){ const res=await fetch('/api/seferler.js'); seferler=await res.json();}
+async function init(){ await fetchSeferler(); const g=seferler.filter(x=>x.sofor===aktif.user).pop(); document.getElementById("gorev").innerHTML=g?`<b>${g.hat}</b><br>${g.arac}<br>${g.sofor} | ${g.saat}`:"Görev yok"; }
 function cikisYap(){localStorage.removeItem("aktifKullanici"); window.location.href="index.html";}
 init();
 </script>
