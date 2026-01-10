@@ -33,9 +33,7 @@ button{
   font-weight:bold;
   cursor:pointer;
 }
-button.logout{
-  background:#f87171;
-}
+button.logout{background:#f87171}
 p{margin-top:5px;}
 hr{margin:20px 0;}
 </style>
@@ -70,20 +68,32 @@ hr{margin:20px 0;}
 
 <hr>
 
+<h3>Kullanıcı Sil</h3>
+<select id="userDelete"></select>
+<button onclick="sil()">Sil</button>
+<p id="msgDel" style="color:red;"></p>
+
+<hr>
+
 <button class="logout" onclick="cikisYap()">Çıkış Yap</button>
 
 </div>
 
 <script>
-// Kullanıcılar ve seferler
+// Users ve seferler
 let users = JSON.parse(localStorage.getItem("users")) || [];
 let seferler = JSON.parse(localStorage.getItem("seferler")) || [];
 
-// Kullanıcı seçme listesi
+// Korunan kullanıcılar (şifre ve silinemez)
+const korunanlar = ["34iett"]; 
+
+// Select doldur
 function doldurUserSelect(){
   userSelect.innerHTML = "";
+  userDelete.innerHTML = "";
   users.forEach(u=>{
     userSelect.innerHTML += `<option value="${u.user}">${u.name} (${u.user})</option>`;
+    userDelete.innerHTML += `<option value="${u.user}">${u.name} (${u.user})</option>`;
   });
 }
 
@@ -95,15 +105,20 @@ function listeleSeferler(){
   });
 }
 
-// Başlangıç
 doldurUserSelect();
 listeleSeferler();
 
 // Şifre değiştirme
 function degistir(){
-  const i = users.findIndex(x=>x.user===userSelect.value);
+  const secilenUser = userSelect.value;
+  if(korunanlar.includes(secilenUser)){
+    msg.innerText="Bu kullanıcının şifresi değiştirilemez ❌";
+    return;
+  }
+  const i = users.findIndex(x=>x.user===secilenUser);
   const pass = newPass.value.trim();
   if(!pass){ msg.innerText="Yeni şifre boş olamaz ❌"; return; }
+
   users[i].pass = pass;
   localStorage.setItem("users", JSON.stringify(users));
   msg.innerText="Şifre güncellendi ✅";
@@ -126,15 +141,25 @@ function yeniKullanici(){
 
   users.push({user, pass, page, name});
   localStorage.setItem("users", JSON.stringify(users));
-
   msgAdd.innerText=`Kullanıcı eklendi ✅ (${user})`;
 
-  // inputları temizle
   newUser.value="";
   newName.value="";
   newPassAdd.value="";
+  doldurUserSelect();
+}
 
-  // kullanıcı listesini güncelle
+// Kullanıcı sil
+function sil(){
+  const secilenUser = userDelete.value;
+  if(korunanlar.includes(secilenUser)){
+    msgDel.innerText="Bu kullanıcı silinemez ❌";
+    return;
+  }
+
+  users = users.filter(u=>u.user!==secilenUser);
+  localStorage.setItem("users", JSON.stringify(users));
+  msgDel.innerText="Kullanıcı silindi ✅";
   doldurUserSelect();
 }
 
