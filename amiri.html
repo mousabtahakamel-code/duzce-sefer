@@ -1,6 +1,7 @@
 <!DOCTYPE html>
-<html>
+<html lang="tr">
 <head>
+<meta charset="UTF-8">
 <title>Hareket Amiri</title>
 <style>
 body{
@@ -60,27 +61,28 @@ button{
 
 <button onclick="kaydet()">Sefer Kaydet</button>
 <p id="msg"></p>
+<button onclick="cikisYap()" style="background:#f87171;">Çıkış Yap</button>
 </div>
 
 <script>
+let seferler = JSON.parse(localStorage.getItem("seferler")) || [];
+
 function kaydet(){
-  const s = JSON.parse(localStorage.getItem("seferler")) || [];
-  s.push({
+  seferler.push({
     hat: hat.value,
     arac: arac.value,
     sofor: sofor.value,
     saat: new Date().toLocaleTimeString("tr-TR",{hour:"2-digit",minute:"2-digit"})
   });
-  localStorage.setItem("seferler", JSON.stringify(s));
+  localStorage.setItem("seferler", JSON.stringify(seferler));
   msg.innerText = "Sefer kaydedildi ✅";
+}
+
+function cikisYap(){
+  localStorage.removeItem("aktifKullanici");
+  window.location.href="index.html";
 }
 </script>
 
 </body>
 </html>
-
-</script>
-</body>
-</html>
-
-
