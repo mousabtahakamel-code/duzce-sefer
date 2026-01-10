@@ -2,45 +2,38 @@
 <html>
 <head>
   <title>Owner</title>
-  <style>
-    body {
-      font-family: Arial;
-      background: #f2f4f8;
-    }
-    .container {
-      max-width: 500px;
-      margin: 50px auto;
-    }
-    .card {
-      background: white;
-      padding: 15px;
-      border-radius: 8px;
-      margin-bottom: 10px;
-      box-shadow: 0 5px 15px rgba(0,0,0,.1);
-    }
-  </style>
 </head>
 <body>
-  <div class="container">
-    <h2>Tüm Seferler</h2>
-    <div id="liste"></div>
-  </div>
+<h2>Owner Paneli</h2>
 
-  <script>
-    const s = JSON.parse(localStorage.getItem("seferler")) || [];
-    if (s.length === 0) {
-      liste.innerText = "Sefer yok";
-    } else {
-      s.forEach(x => {
-        liste.innerHTML += `
-          <div class="card">
-            <b>${x.hat}</b><br>
-            ${x.arac}<br>
-            ${x.sofor} • ${x.saat}
-          </div>
-        `;
-      });
-    }
-  </script>
+<h3>Seferler</h3>
+<div id="liste"></div>
+
+<h3>Şifre Değiştir</h3>
+<select id="userSelect"></select>
+<input id="newPass" placeholder="Yeni şifre">
+<button onclick="degistir()">Güncelle</button>
+<p id="msg"></p>
+
+<script>
+const users = JSON.parse(localStorage.getItem("users")) || [];
+const seferler = JSON.parse(localStorage.getItem("seferler")) || [];
+
+seferler.forEach(s=>{
+  liste.innerHTML+=`${s.hat} - ${s.arac} - ${s.sofor}<br>`;
+});
+
+users.forEach(u=>{
+  userSelect.innerHTML+=`<option value="${u.user}">${u.name}</option>`;
+});
+
+function degistir(){
+  const u = userSelect.value;
+  const i = users.findIndex(x=>x.user===u);
+  users[i].pass = newPass.value;
+  localStorage.setItem("users",JSON.stringify(users));
+  msg.innerText="Şifre değişti";
+}
+</script>
 </body>
 </html>
