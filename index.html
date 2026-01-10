@@ -8,10 +8,10 @@
       font-family: Arial;
       background: linear-gradient(135deg,#2563eb,#1e40af);
       height: 100vh;
+      margin: 0;
       display: flex;
       justify-content: center;
       align-items: center;
-      margin: 0;
     }
     .box {
       background: white;
@@ -28,20 +28,52 @@
       background: #2563eb;
       color: white;
       border: none;
+      cursor: pointer;
     }
-    #msg { color: red; text-align: center; }
+    #msg {
+      color: red;
+      text-align: center;
+      margin-top: 10px;
+    }
   </style>
 </head>
+
 <body>
   <div class="box">
     <h2>Giriş</h2>
     <input id="user" placeholder="Kullanıcı adı">
     <input id="pass" type="password" placeholder="Şifre">
-    <button onclick="login()">Giriş Yap</button>
+    <button type="button" onclick="login()">Giriş Yap</button>
     <div id="msg"></div>
   </div>
 
-  <script src="login.js"></script>
+  <script>
+    const users = [
+      { user: "34iett", pass: "mousab12", page: "owner.html", name: "WEB ISLEMCI" },
+      { user: "duzce", pass: "1234", page: "owner.html", name: "Patron" },
+      { user: "amiri1", pass: "1111", page: "amiri.html", name: "Hareket Amiri 1" },
+      { user: "sofor1", pass: "3333", page: "sofor.html", name: "Şoför 1" }
+    ];
+
+    if (!localStorage.getItem("users")) {
+      localStorage.setItem("users", JSON.stringify(users));
+    }
+
+    function login() {
+      const u = document.getElementById("user").value;
+      const p = document.getElementById("pass").value;
+      const msg = document.getElementById("msg");
+
+      const usersLS = JSON.parse(localStorage.getItem("users")) || [];
+      const found = usersLS.find(x => x.user === u && x.pass === p);
+
+      if (found) {
+        localStorage.setItem("aktifKullanici", JSON.stringify(found));
+        window.location.href = found.page;
+      } else {
+        msg.innerText = "Hatalı giriş";
+      }
+    }
+  </script>
 </body>
 </html>
-
