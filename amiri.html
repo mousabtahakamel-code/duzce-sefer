@@ -15,13 +15,23 @@ button{background:#2563eb;color:white;border:none;border-radius:6px;cursor:point
 
 <script>
 const aktif = JSON.parse(localStorage.getItem("aktifKullanici"));
-if(!aktif || aktif.page!=="amiri.html"){
-  alert("Bu sayfaya giriş yetkiniz yok!");
+
+// Yetki kontrolü
+if(!aktif){
+  alert("Önce giriş yapmalısınız!");
+  window.location.href="index.html";
+} else if(aktif.page !== "amiri.html"){
+  alert("Bu sayfaya yetkiniz yok!");
+  window.location.href="index.html";
+}
+
+// Çıkış fonksiyonu
+function cikisYap(){
+  localStorage.removeItem("aktifKullanici");
   window.location.href="index.html";
 }
 </script>
 
-<div class="card">
 <h2>Hareket Amiri Paneli</h2>
 
 <h3>Hat Seç</h3>
@@ -94,3 +104,4 @@ init();
 
 </body>
 </html>
+
