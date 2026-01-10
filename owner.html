@@ -16,6 +16,15 @@ hr{margin:20px 0;}
 </head>
 <body>
 
+<script>
+// Owner yetki kontrolü
+const aktif = JSON.parse(localStorage.getItem("aktifKullanici"));
+if(!aktif || aktif.page !== "owner.html"){
+  alert("Bu sayfaya giriş yetkiniz yok!");
+  window.location.href="index.html";
+}
+</script>
+
 <div class="box">
 <h2>Owner Paneli</h2>
 
@@ -53,8 +62,8 @@ hr{margin:20px 0;}
 
 <script>
 const korunanlar=["34iett"];
-async function fetchUsers(){ const res=await fetch('/api/users.json'); return await res.json();}
-async function updateUsers(users){await fetch('/api/users.json',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(users,null,2)});}
+async function fetchUsers(){ const res=await fetch('/api/users.js'); return await res.json();}
+async function updateUsers(users){await fetch('/api/users.js',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(users,null,2)});}
 async function doldurSelects(){const users=await fetchUsers(); userSelect.innerHTML=""; userDelete.innerHTML=""; users.forEach(u=>{userSelect.innerHTML+=`<option value="${u.user}">${u.name} (${u.user})</option>`; userDelete.innerHTML+=`<option value="${u.user}">${u.name} (${u.user})</option>`;});}
 async function degistir(){const secilen=userSelect.value; if(korunanlar.includes(secilen)){msg.innerText="Bu kullanıcının şifresi değiştirilemez ❌"; return;} const pass=newPass.value.trim(); if(!pass){msg.innerText="Yeni şifre boş olamaz ❌"; return;} let users=await fetchUsers(); const i=users.findIndex(x=>x.user===secilen); users[i].pass=pass; await updateUsers(users); msg.innerText="Şifre güncellendi ✅"; newPass.value="";}
 async function yeniKullanici(){const user=newUser.value.trim(); const name=newName.value.trim(); const pass=newPassAdd.value.trim(); const role=roleSelect.value; if(!user||!name||!pass){msgAdd.innerText="Tüm alanları doldurun ❌"; return;} let users=await fetchUsers(); const page=role==="owner"?"owner.html":role==="amiri"?"amiri.html":"sofor.html"; users.push({user,pass,page,name}); await updateUsers(users); msgAdd.innerText=`Kullanıcı eklendi ✅ (${user})`; newUser.value=""; newName.value=""; newPassAdd.value=""; await doldurSelects();}
@@ -62,10 +71,6 @@ async function sil(){const secilen=userDelete.value; if(korunanlar.includes(seci
 function cikisYap(){localStorage.removeItem("aktifKullanici"); window.location.href="index.html";}
 doldurSelects();
 </script>
-
-</body>
-</html>
-
 
 </body>
 </html>
