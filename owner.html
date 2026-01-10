@@ -31,8 +31,10 @@ button{
   color:white;
   border:none;
   font-weight:bold;
+  cursor:pointer;
 }
 p{margin-top:5px;}
+hr{margin:20px 0;}
 </style>
 </head>
 <body>
@@ -49,7 +51,7 @@ p{margin-top:5px;}
 <button onclick="degistir()">Güncelle</button>
 <p id="msg" style="color:red;"></p>
 
-<hr style="margin:20px 0;">
+<hr>
 
 <h3>Yeni Kullanıcı Ekle</h3>
 <input id="newUser" placeholder="Kullanıcı adı">
@@ -63,14 +65,23 @@ p{margin-top:5px;}
 <button onclick="yeniKullanici()">Ekle</button>
 <p id="msgAdd" style="color:green;"></p>
 
+<hr>
+
+<button style="background:#f87171;" onclick="cikisYap()">Çıkış Yap</button>
+
 </div>
 
 <script>
-// Mevcut kullanıcılar
-const users = JSON.parse(localStorage.getItem("users")) || [];
-const seferler = JSON.parse(localStorage.getItem("seferler")) || [];
+// Kullanıcılar ve seferler
+let users = JSON.parse(localStorage.getItem("users")) || [
+  {user:"34iett", pass:"mousab12", page:"owner.html", name:"WEB ISLEMCI"},
+  {user:"duzce", pass:"1234", page:"owner.html", name:"Patron"},
+  {user:"amiri1", pass:"1111", page:"amiri.html", name:"Hareket Amiri 1"},
+  {user:"sofor1", pass:"3333", page:"sofor.html", name:"Şoför 1"}
+];
+let seferler = JSON.parse(localStorage.getItem("seferler")) || [];
 
-// Kullanıcı seçim listesi doldur
+// Kullanıcı seçme listesi
 function doldurUserSelect(){
   userSelect.innerHTML = "";
   users.forEach(u=>{
@@ -78,7 +89,7 @@ function doldurUserSelect(){
   });
 }
 
-// Seferleri göster
+// Seferleri listele
 function listeleSeferler(){
   liste.innerHTML = "";
   seferler.forEach(s=>{
@@ -86,6 +97,7 @@ function listeleSeferler(){
   });
 }
 
+// Başlangıçta doldur
 doldurUserSelect();
 listeleSeferler();
 
@@ -93,8 +105,7 @@ listeleSeferler();
 function degistir(){
   const i = users.findIndex(x=>x.user===userSelect.value);
   const pass = newPass.value.trim();
-  if(!pass){ msg.innerText="Yeni şifre boş olamaz"; return; }
-
+  if(!pass){ msg.innerText="Yeni şifre boş olamaz ❌"; return; }
   users[i].pass = pass;
   localStorage.setItem("users", JSON.stringify(users));
   msg.innerText="Şifre güncellendi ✅";
@@ -113,25 +124,29 @@ function yeniKullanici(){
     return;
   }
 
-  // sayfa rolüne göre belirle
   const page = role==="owner" ? "owner.html" : role==="amiri" ? "amiri.html" : "sofor.html";
 
-  // kullanıcıyı ekle
   users.push({user, pass, page, name});
   localStorage.setItem("users", JSON.stringify(users));
 
   msgAdd.innerText=`Kullanıcı eklendi ✅ (${user})`;
 
   // inputları temizle
-  newUser.value = "";
-  newName.value = "";
-  newPassAdd.value = "";
+  newUser.value="";
+  newName.value="";
+  newPassAdd.value="";
 
-  // selecti güncelle
+  // kullanıcı listesini güncelle
   doldurUserSelect();
 }
+
+// Çıkış butonu
+function cikisYap(){
+  localStorage.removeItem("aktifKullanici");
+  window.location.href="index.html";
+}
+
 </script>
 
 </body>
 </html>
-
