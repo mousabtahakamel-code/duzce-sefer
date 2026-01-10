@@ -1,7 +1,17 @@
-[
-  {"user":"34iett","pass":"mousab12","page":"owner.html","name":"WEB ISLEMCI"},
-  {"user":"duzce","pass":"1234","page":"owner.html","name":"Duzce"},
-  {"user":"Gojira","pass":"gojiraedit","page":"owner.html","name":"Gojira"},
-  {"user":"amiri1","pass":"1111","page":"amiri.html","name":"Hareket Amiri 1"},
-  {"user":"sofor1","pass":"3333","page":"sofor.html","name":"Şoför 1"}
-]
+import fs from 'fs';
+import path from 'path';
+
+const filePath = path.join(process.cwd(), 'api', 'users.json');
+
+export default function handler(req, res){
+  if(req.method==='GET'){
+    const data = JSON.parse(fs.readFileSync(filePath,'utf-8'));
+    res.status(200).json(data);
+  } else if(req.method==='PUT'){
+    const body = req.body;
+    fs.writeFileSync(filePath, JSON.stringify(body,null,2));
+    res.status(200).json({status:"ok"});
+  } else {
+    res.status(405).end();
+  }
+}
