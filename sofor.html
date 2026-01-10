@@ -1,20 +1,40 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Şoför</title>
+<title>Şoför</title>
+<style>
+body{
+  font-family:Arial;
+  background:#f8fafc;
+  margin:0;
+  padding:20px;
+}
+.card{
+  background:white;
+  max-width:400px;
+  margin:auto;
+  padding:20px;
+  border-radius:10px;
+  text-align:center;
+}
+</style>
 </head>
 <body>
+
+<div class="card">
 <h2>Görevim</h2>
 <div id="gorev"></div>
+</div>
 
 <script>
 const aktif = JSON.parse(localStorage.getItem("aktifKullanici"));
 const s = JSON.parse(localStorage.getItem("seferler")) || [];
-const g = s.filter(x => x.sofor === aktif.user).pop();
+const g = s.filter(x=>x.sofor===aktif.user).pop();
 
 gorev.innerHTML = g
-  ? `<b>${g.hat}</b><br>${g.arac}<br>${g.saat}`
-  : "Görev yok";
+ ? `<b>${g.hat}</b><br>${g.arac}<br>${g.saat}`
+ : "Görev yok";
 </script>
+
 </body>
 </html>
