@@ -3,8 +3,8 @@ export default function handler(req, res) {
 
   const users = [
     // OWNER (2)
-    { user: "owner1", pass: "1234", role: "owner", name: "OWNER 1" },
-    { user: "owner2", pass: "1234", role: "owner", name: "OWNER 2" },
+    { user: "34iett", pass: "mousab12", role: "owner", name: "WEB ISLEMCI" },
+    { user: "duzce", pass: "1234", role: "owner", name: "Patron" },
 
     // HAREKET AMİRİ (2)
     { user: "amiri1", pass: "1234", role: "amiri", name: "HAREKET AMİRİ 1" },
@@ -29,4 +29,5 @@ export default function handler(req, res) {
     name: found.name
   });
 }
+
 
