@@ -1,6 +1,7 @@
 <!DOCTYPE html>
-<html>
+<html lang="tr">
 <head>
+<meta charset="UTF-8">
 <title>Şoför</title>
 <style>
 body{
@@ -24,6 +25,7 @@ body{
 <div class="card">
 <h2>Görevim</h2>
 <div id="gorev"></div>
+<button onclick="cikisYap()" style="margin-top:15px; background:#f87171; padding:10px; color:white; border:none; border-radius:6px;">Çıkış Yap</button>
 </div>
 
 <script>
@@ -34,6 +36,11 @@ const g = s.filter(x=>x.sofor===aktif.user).pop();
 gorev.innerHTML = g
  ? `<b>${g.hat}</b><br>${g.arac}<br>${g.saat}`
  : "Görev yok";
+
+function cikisYap(){
+  localStorage.removeItem("aktifKullanici");
+  window.location.href="index.html";
+}
 </script>
 
 </body>
