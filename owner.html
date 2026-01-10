@@ -4,35 +4,11 @@
 <meta charset="UTF-8">
 <title>Owner Paneli</title>
 <style>
-body{
-  font-family:Arial;
-  background:#f1f5f9;
-  margin:0;
-  padding:20px;
-}
-.box{
-  background:white;
-  padding:20px;
-  border-radius:10px;
-  max-width:700px;
-  margin:auto;
-  box-shadow:0 5px 15px rgba(0,0,0,.1);
-}
+body{font-family:Arial;background:#f1f5f9;margin:0;padding:20px;}
+.box{background:white;padding:20px;border-radius:10px;max-width:700px;margin:auto;box-shadow:0 5px 15px rgba(0,0,0,.1);}
 h2,h3{color:#1e40af}
-select,input,button{
-  width:100%;
-  padding:10px;
-  margin-top:10px;
-  border-radius:6px;
-  border:1px solid #ccc;
-}
-button{
-  background:#1e40af;
-  color:white;
-  border:none;
-  font-weight:bold;
-  cursor:pointer;
-}
+select,input,button{width:100%;padding:10px;margin-top:10px;border-radius:6px;border:1px solid #ccc;}
+button{background:#1e40af;color:white;border:none;font-weight:bold;cursor:pointer;}
 button.logout{background:#f87171}
 p{margin-top:5px;}
 hr{margin:20px 0;}
@@ -42,9 +18,6 @@ hr{margin:20px 0;}
 
 <div class="box">
 <h2>Owner Paneli</h2>
-
-<h3>Sefer Listesi</h3>
-<div id="liste" style="background:#eef; padding:10px; border-radius:6px; min-height:50px;"></div>
 
 <h3>Şifre Değiştir</h3>
 <select id="userSelect"></select>
@@ -59,9 +32,9 @@ hr{margin:20px 0;}
 <input id="newName" placeholder="İsim Soyisim">
 <input id="newPassAdd" placeholder="Şifre">
 <select id="roleSelect">
-  <option value="owner">Owner</option>
-  <option value="amiri">Hareket Amiri</option>
-  <option value="sofor">Şoför</option>
+<option value="owner">Owner</option>
+<option value="amiri">Hareket Amiri</option>
+<option value="sofor">Şoför</option>
 </select>
 <button onclick="yeniKullanici()">Ekle</button>
 <p id="msgAdd" style="color:green;"></p>
@@ -76,100 +49,25 @@ hr{margin:20px 0;}
 <hr>
 
 <button class="logout" onclick="cikisYap()">Çıkış Yap</button>
-
 </div>
 
 <script>
-// Users ve seferler
-let users = JSON.parse(localStorage.getItem("users")) || [];
-let seferler = JSON.parse(localStorage.getItem("seferler")) || [];
-
-// Korunan kullanıcılar (şifre ve silinemez)
-const korunanlar = ["34iett"]; 
-
-// Select doldur
-function doldurUserSelect(){
-  userSelect.innerHTML = "";
-  userDelete.innerHTML = "";
-  users.forEach(u=>{
-    userSelect.innerHTML += `<option value="${u.user}">${u.name} (${u.user})</option>`;
-    userDelete.innerHTML += `<option value="${u.user}">${u.name} (${u.user})</option>`;
-  });
-}
-
-// Seferleri listele
-function listeleSeferler(){
-  liste.innerHTML = "";
-  seferler.forEach(s=>{
-    liste.innerHTML += `• ${s.hat} | ${s.arac} | ${s.sofor}<br>`;
-  });
-}
-
-doldurUserSelect();
-listeleSeferler();
-
-// Şifre değiştirme
-function degistir(){
-  const secilenUser = userSelect.value;
-  if(korunanlar.includes(secilenUser)){
-    msg.innerText="Bu kullanıcının şifresi değiştirilemez ❌";
-    return;
-  }
-  const i = users.findIndex(x=>x.user===secilenUser);
-  const pass = newPass.value.trim();
-  if(!pass){ msg.innerText="Yeni şifre boş olamaz ❌"; return; }
-
-  users[i].pass = pass;
-  localStorage.setItem("users", JSON.stringify(users));
-  msg.innerText="Şifre güncellendi ✅";
-  newPass.value="";
-}
-
-// Yeni kullanıcı ekleme
-function yeniKullanici(){
-  const user = newUser.value.trim();
-  const name = newName.value.trim();
-  const pass = newPassAdd.value.trim();
-  const role = roleSelect.value;
-
-  if(!user || !name || !pass){
-    msgAdd.innerText="Tüm alanları doldurun ❌";
-    return;
-  }
-
-  const page = role==="owner" ? "owner.html" : role==="amiri" ? "amiri.html" : "sofor.html";
-
-  users.push({user, pass, page, name});
-  localStorage.setItem("users", JSON.stringify(users));
-  msgAdd.innerText=`Kullanıcı eklendi ✅ (${user})`;
-
-  newUser.value="";
-  newName.value="";
-  newPassAdd.value="";
-  doldurUserSelect();
-}
-
-// Kullanıcı sil
-function sil(){
-  const secilenUser = userDelete.value;
-  if(korunanlar.includes(secilenUser)){
-    msgDel.innerText="Bu kullanıcı silinemez ❌";
-    return;
-  }
-
-  users = users.filter(u=>u.user!==secilenUser);
-  localStorage.setItem("users", JSON.stringify(users));
-  msgDel.innerText="Kullanıcı silindi ✅";
-  doldurUserSelect();
-}
-
-// Çıkış
-function cikisYap(){
-  localStorage.removeItem("aktifKullanici");
-  window.location.href="index.html";
-}
+const korunanlar=["34iett"];
+async function fetchUsers(){ const res=await fetch('/api/users.json'); return await res.json();}
+async function updateUsers(users){await fetch('/api/users.json',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(users,null,2)});}
+async function doldurSelects(){const users=await fetchUsers(); userSelect.innerHTML=""; userDelete.innerHTML=""; users.forEach(u=>{userSelect.innerHTML+=`<option value="${u.user}">${u.name} (${u.user})</option>`; userDelete.innerHTML+=`<option value="${u.user}">${u.name} (${u.user})</option>`;});}
+async function degistir(){const secilen=userSelect.value; if(korunanlar.includes(secilen)){msg.innerText="Bu kullanıcının şifresi değiştirilemez ❌"; return;} const pass=newPass.value.trim(); if(!pass){msg.innerText="Yeni şifre boş olamaz ❌"; return;} let users=await fetchUsers(); const i=users.findIndex(x=>x.user===secilen); users[i].pass=pass; await updateUsers(users); msg.innerText="Şifre güncellendi ✅"; newPass.value="";}
+async function yeniKullanici(){const user=newUser.value.trim(); const name=newName.value.trim(); const pass=newPassAdd.value.trim(); const role=roleSelect.value; if(!user||!name||!pass){msgAdd.innerText="Tüm alanları doldurun ❌"; return;} let users=await fetchUsers(); const page=role==="owner"?"owner.html":role==="amiri"?"amiri.html":"sofor.html"; users.push({user,pass,page,name}); await updateUsers(users); msgAdd.innerText=`Kullanıcı eklendi ✅ (${user})`; newUser.value=""; newName.value=""; newPassAdd.value=""; await doldurSelects();}
+async function sil(){const secilen=userDelete.value; if(korunanlar.includes(secilen)){msgDel.innerText="Bu kullanıcı silinemez ❌"; return;} let users=await fetchUsers(); users=users.filter(u=>u.user!==secilen); await updateUsers(users); msgDel.innerText="Kullanıcı silindi ✅"; await doldurSelects();}
+function cikisYap(){localStorage.removeItem("aktifKullanici"); window.location.href="index.html";}
+doldurSelects();
 </script>
 
 </body>
 </html>
+
+
+</body>
+</html>
+
 
