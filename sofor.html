@@ -4,20 +4,8 @@
 <meta charset="UTF-8">
 <title>Şoför</title>
 <style>
-body{
-  font-family:Arial;
-  background:#f8fafc;
-  margin:0;
-  padding:20px;
-}
-.card{
-  background:white;
-  max-width:400px;
-  margin:auto;
-  padding:20px;
-  border-radius:10px;
-  text-align:center;
-}
+body{font-family:Arial;background:#f8fafc;margin:0;padding:20px;}
+.card{background:white;max-width:400px;margin:auto;padding:20px;border-radius:10px;text-align:center;}
 </style>
 </head>
 <body>
@@ -25,23 +13,18 @@ body{
 <div class="card">
 <h2>Görevim</h2>
 <div id="gorev"></div>
-<button onclick="cikisYap()" style="margin-top:15px; background:#f87171; padding:10px; color:white; border:none; border-radius:6px;">Çıkış Yap</button>
+<button onclick="cikisYap()" style="margin-top:15px;background:#f87171;padding:10px;color:white;border:none;border-radius:6px;">Çıkış Yap</button>
 </div>
 
 <script>
-const aktif = JSON.parse(localStorage.getItem("aktifKullanici"));
-const s = JSON.parse(localStorage.getItem("seferler")) || [];
-const g = s.filter(x=>x.sofor===aktif.user).pop();
-
-gorev.innerHTML = g
- ? `<b>${g.hat}</b><br>${g.arac}<br>${g.sofor} | ${g.saat}`
- : "Görev yok";
-
-function cikisYap(){
-  localStorage.removeItem("aktifKullanici");
-  window.location.href="index.html";
-}
+const aktif=JSON.parse(localStorage.getItem("aktifKullanici"));
+let seferler=[];
+async function fetchSeferler(){ const res=await fetch('/api/seferler.json'); seferler=await res.json();}
+async function init(){ await fetchSeferler(); const g=seferler.filter(x=>x.sofor===aktif.user).pop(); gorev.innerHTML=g?`<b>${g.hat}</b><br>${g.arac}<br>${g.sofor} | ${g.saat}`:"Görev yok"; }
+function cikisYap(){localStorage.removeItem("aktifKullanici"); window.location.href="index.html";}
+init();
 </script>
 
 </body>
 </html>
+
