@@ -33,6 +33,9 @@ button{
   font-weight:bold;
   cursor:pointer;
 }
+button.logout{
+  background:#f87171;
+}
 p{margin-top:5px;}
 hr{margin:20px 0;}
 </style>
@@ -67,18 +70,13 @@ hr{margin:20px 0;}
 
 <hr>
 
-<button style="background:#f87171;" onclick="cikisYap()">Çıkış Yap</button>
+<button class="logout" onclick="cikisYap()">Çıkış Yap</button>
 
 </div>
 
 <script>
 // Kullanıcılar ve seferler
-let users = JSON.parse(localStorage.getItem("users")) || [
-  {user:"34iett", pass:"mousab12", page:"owner.html", name:"WEB ISLEMCI"},
-  {user:"duzce", pass:"1234", page:"owner.html", name:"Patron"},
-  {user:"amiri1", pass:"1111", page:"amiri.html", name:"Hareket Amiri 1"},
-  {user:"sofor1", pass:"3333", page:"sofor.html", name:"Şoför 1"}
-];
+let users = JSON.parse(localStorage.getItem("users")) || [];
 let seferler = JSON.parse(localStorage.getItem("seferler")) || [];
 
 // Kullanıcı seçme listesi
@@ -97,7 +95,7 @@ function listeleSeferler(){
   });
 }
 
-// Başlangıçta doldur
+// Başlangıç
 doldurUserSelect();
 listeleSeferler();
 
@@ -140,13 +138,13 @@ function yeniKullanici(){
   doldurUserSelect();
 }
 
-// Çıkış butonu
+// Çıkış
 function cikisYap(){
   localStorage.removeItem("aktifKullanici");
   window.location.href="index.html";
 }
-
 </script>
 
 </body>
 </html>
+
