@@ -4,84 +4,47 @@
 <meta charset="UTF-8">
 <title>Giriş</title>
 <style>
-body{
-  font-family:Arial;
-  background:linear-gradient(135deg,#1e40af,#2563eb);
-  height:100vh;
-  margin:0;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-}
-.card{
-  background:white;
-  padding:30px;
-  width:320px;
-  border-radius:12px;
-  box-shadow:0 10px 25px rgba(0,0,0,.2);
-}
+body{font-family:Arial;background:linear-gradient(135deg,#1e40af,#2563eb);height:100vh;margin:0;display:flex;align-items:center;justify-content:center;}
+.card{background:white;padding:30px;width:320px;border-radius:12px;box-shadow:0 10px 25px rgba(0,0,0,.2);}
 h2{text-align:center}
-input,button{
-  width:100%;
-  padding:12px;
-  margin-top:12px;
-  border-radius:6px;
-}
+input,button{width:100%;padding:12px;margin-top:12px;border-radius:6px;}
 input{border:1px solid #ccc}
-button{
-  background:#2563eb;
-  color:white;
-  border:none;
-  font-weight:bold;
-}
+button{background:#2563eb;color:white;border:none;font-weight:bold}
 #msg{color:red;text-align:center;margin-top:10px}
 </style>
 </head>
 <body>
 
 <div class="card">
-  <h2>Düzce Ulaşım</h2>
-  <input id="user" placeholder="Kullanıcı adı">
-  <input id="pass" type="password" placeholder="Şifre">
-  <button type="button" onclick="login()">Giriş Yap</button>
-  <div id="msg"></div>
+<h2>Düzce Ulaşım</h2>
+<input id="user" placeholder="Kullanıcı adı">
+<input id="pass" type="password" placeholder="Şifre">
+<button type="button" onclick="login()">Giriş Yap</button>
+<div id="msg"></div>
 </div>
 
 <script>
-function login(){
-  const u = document.getElementById("user").value.trim();
-  const p = document.getElementById("pass").value.trim();
-  const msg = document.getElementById("msg");
-
-  const users = JSON.parse(localStorage.getItem("users")) || [];
-
-  const found = users.find(x=>x.user===u && x.pass===p);
-
-  if(found){
-    localStorage.setItem("aktifKullanici", JSON.stringify(found));
-    window.location.href = found.page;
-  } else {
-    msg.innerText = "Hatalı giriş ❌";
+async function login(){
+  const u=document.getElementById("user").value.trim();
+  const p=document.getElementById("pass").value.trim();
+  const msg=document.getElementById("msg");
+  try{
+    const res=await fetch('/api/users.json');
+    const users=await res.json();
+    const found=users.find(x=>x.user===u && x.pass===p);
+    if(found){
+      localStorage.setItem("aktifKullanici",JSON.stringify(found));
+      window.location.href=found.page;
+    } else {
+      msg.innerText="Hatalı giriş ❌";
+    }
+  }catch(err){
+    msg.innerText="Sunucuya bağlanamadı ❌";
   }
-}
-
-// Başlangıç users
-if(!localStorage.getItem("users")){
-  const initUsers = [
-    {user:"34iett", pass:"mousab12", page:"owner.html", name:"WEB ISLEMCI"}
-  ];
-  localStorage.setItem("users", JSON.stringify(initUsers));
-}
-
-// Başlangıç seferler
-if(!localStorage.getItem("seferler")){
-  localStorage.setItem("seferler", JSON.stringify([]));
 }
 </script>
 
 </body>
 </html>
-
-
 
 
