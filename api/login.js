@@ -10,10 +10,6 @@ export default function handler(req, res) {
     { user: "amiri1", pass: "1234", role: "amiri", name: "HAREKET AMİRİ 1" },
     { user: "amiri2", pass: "1234", role: "amiri", name: "HAREKET AMİRİ 2" },
 
-    // ADMIN (2)
-    { user: "admin1", pass: "1234", role: "admin", name: "ADMIN 1" },
-    { user: "admin2", pass: "1234", role: "admin", name: "ADMIN 2" },
-
     // ŞOFÖRLER
     { user: "sofor1", pass: "1234", role: "sofor", name: "ŞOFÖR 1" },
     { user: "sofor2", pass: "1234", role: "sofor", name: "ŞOFÖR 2" }
@@ -33,3 +29,4 @@ export default function handler(req, res) {
     name: found.name
   });
 }
+
