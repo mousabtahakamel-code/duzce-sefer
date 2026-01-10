@@ -34,7 +34,7 @@ const s = JSON.parse(localStorage.getItem("seferler")) || [];
 const g = s.filter(x=>x.sofor===aktif.user).pop();
 
 gorev.innerHTML = g
- ? `<b>${g.hat}</b><br>${g.arac}<br>${g.saat}`
+ ? `<b>${g.hat}</b><br>${g.arac}<br>${g.sofor} | ${g.saat}`
  : "Görev yok";
 
 function cikisYap(){
