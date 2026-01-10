@@ -2,48 +2,19 @@
 <html>
 <head>
   <title>Şoför</title>
-  <style>
-    body {
-      font-family: Arial;
-      background: #f2f4f8;
-    }
-    .container {
-      max-width: 400px;
-      margin: 60px auto;
-      background: white;
-      padding: 25px;
-      border-radius: 10px;
-    }
-    .card {
-      background: #eff6ff;
-      padding: 15px;
-      border-left: 4px solid #2563eb;
-      border-radius: 6px;
-    }
-  </style>
 </head>
 <body>
-  <div class="container">
-    <h2>Görevim</h2>
-    <div id="gorev"></div>
-  </div>
+<h2>Görevim</h2>
+<div id="gorev"></div>
 
-  <script>
-    const aktif = "sofor1";
-    const s = JSON.parse(localStorage.getItem("seferler")) || [];
-    const benim = s.filter(x => x.sofor === aktif);
-    if (benim.length === 0) {
-      gorev.innerText = "Görev yok";
-    } else {
-      const g = benim[benim.length - 1];
-      gorev.innerHTML = `
-        <div class="card">
-          <b>Hat:</b> ${g.hat}<br>
-          <b>Araç:</b> ${g.arac}<br>
-          <b>Saat:</b> ${g.saat}
-        </div>
-      `;
-    }
-  </script>
+<script>
+const aktif = JSON.parse(localStorage.getItem("aktifKullanici"));
+const s = JSON.parse(localStorage.getItem("seferler")) || [];
+const g = s.filter(x => x.sofor === aktif.user).pop();
+
+gorev.innerHTML = g
+  ? `<b>${g.hat}</b><br>${g.arac}<br>${g.saat}`
+  : "Görev yok";
+</script>
 </body>
 </html>
