@@ -1,100 +1,88 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-  <meta charset="UTF-8">
-  <title>Düzce Sefer Sistemi</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: linear-gradient(135deg, #2563eb, #1e40af);
-      height: 100vh;
-      margin: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    .container {
-      background: white;
-      padding: 30px;
-      width: 320px;
-      border-radius: 12px;
-      box-shadow: 0 15px 30px rgba(0,0,0,0.2);
-    }
-    h2 {
-      text-align: center;
-      margin-bottom: 25px;
-    }
-    input {
-      width: 100%;
-      padding: 10px;
-      margin-bottom: 15px;
-      border-radius: 6px;
-      border: 1px solid #ccc;
-    }
-    button {
-      width: 100%;
-      padding: 12px;
-      border: none;
-      border-radius: 6px;
-      background: #2563eb;
-      color: white;
-      font-size: 15px;
-      cursor: pointer;
-    }
-    button:hover {
-      background: #1e40af;
-    }
-    #msg {
-      text-align: center;
-      margin-top: 10px;
-      color: red;
-      font-size: 13px;
-    }
-  </style>
+<meta charset="UTF-8">
+<title>Giriş</title>
+<style>
+body{
+  font-family:Arial;
+  background:linear-gradient(135deg,#1e40af,#2563eb);
+  height:100vh;
+  margin:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+.card{
+  background:white;
+  padding:30px;
+  width:320px;
+  border-radius:12px;
+  box-shadow:0 10px 25px rgba(0,0,0,.2);
+}
+h2{text-align:center}
+input,button{
+  width:100%;
+  padding:12px;
+  margin-top:12px;
+  border-radius:6px;
+}
+input{border:1px solid #ccc}
+button{
+  background:#2563eb;
+  color:white;
+  border:none;
+  font-weight:bold;
+}
+#msg{color:red;text-align:center;margin-top:10px}
+</style>
 </head>
 <body>
-  <div class="container">
-    <h2>Düzce Sefer Sistemi</h2>
-    <input id="user" placeholder="Kullanıcı adı">
-    <input id="pass" type="password" placeholder="Şifre">
-    <button onclick="login()">Giriş Yap</button>
-    <div id="msg"></div>
-  </div>
+
+<div class="card">
+  <h2>Düzce Ulaşım</h2>
+  <input id="user" placeholder="Kullanıcı adı">
+  <input id="pass" type="password" placeholder="Şifre">
+  <button type="button" onclick="login()">Giriş Yap</button>
+  <div id="msg"></div>
+</div>
 
 <script>
-  const users = [
-    // OWNER
-    { user: "34iett", pass: "mousab12", page: "owner.html", name: "WEB ISLEMCI" },
-    { user: "duzce", pass: "1234", page: "owner.html", name: "Patron" },
+// Login fonksiyonu
+function login(){
+  const u = document.getElementById("user").value.trim();
+  const p = document.getElementById("pass").value.trim();
+  const msg = document.getElementById("msg");
 
-    // HAREKET AMİRİ
-    { user: "amiri1", pass: "1234", page: "amiri.html", name: "Hareket Amiri 1" },
-    { user: "amiri2", pass: "1234", page: "amiri.html", name: "Hareket Amiri 2" },
+  const users = JSON.parse(localStorage.getItem("users")) || [];
 
-    // ŞOFÖR
-    { user: "sofor1", pass: "1111", page: "sofor.html", name: "Şoför 1" },
-    { user: "sofor2", pass: "2222", page: "sofor.html", name: "Şoför 2" }
-  ];
+  const found = users.find(x=>x.user===u && x.pass===p);
 
-  function login() {
-    const u = document.getElementById("user").value;
-    const p = document.getElementById("pass").value;
-    const msg = document.getElementById("msg");
-
-    const found = users.find(x => x.user === u && x.pass === p);
-
-    if (found) {
-      localStorage.setItem("aktifKullanici", JSON.stringify(found));
-      window.location.href = found.page;
-    } else {
-      msg.innerText = "Hatalı giriş";
-    }
+  if(found){
+    localStorage.setItem("aktifKullanici", JSON.stringify(found));
+    window.location.href = found.page;
+  } else {
+    msg.innerText = "Hatalı giriş ❌";
   }
+}
+
+// Başlangıç users set (sadece ilk deploy için)
+if(!localStorage.getItem("users")){
+  const initUsers = [
+    {user:"34iett", pass:"mousab12", page:"owner.html", name:"WEB ISLEMCI"},
+    {user:"duzce", pass:"1234", page:"owner.html", name:"Patron"},
+    {user:"amiri1", pass:"1111", page:"amiri.html", name:"Hareket Amiri 1"},
+    {user:"sofor1", pass:"3333", page:"sofor.html", name:"Şoför 1"}
+  ];
+  localStorage.setItem("users", JSON.stringify(initUsers));
+}
+
+// Başlangıç seferler (opsiyonel boş array)
+if(!localStorage.getItem("seferler")){
+  localStorage.setItem("seferler", JSON.stringify([]));
+}
 </script>
 
-</script>
-
-  </script>
 </body>
 </html>
 
