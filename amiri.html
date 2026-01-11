@@ -1,87 +1,90 @@
 <!DOCTYPE html>
-<html>
+<html lang="tr">
 <head>
-  <title>Hareket Amiri</title>
-  <style>
-    body {
-      font-family: Arial;
-      background: #f2f4f8;
-      margin: 0;
-    }
-    .container {
-      max-width: 420px;
-      margin: 60px auto;
-      background: white;
-      padding: 25px;
-      border-radius: 10px;
-      box-shadow: 0 10px 25px rgba(0,0,0,.1);
-    }
-    h2 { text-align: center; }
-    select, button {
-      width: 100%;
-      padding: 10px;
-      margin-top: 12px;
-      border-radius: 6px;
-    }
-    button {
-      background: #16a34a;
-      color: white;
-      border: none;
-      font-size: 15px;
-    }
-    #msg {
-      text-align: center;
-      margin-top: 10px;
-      color: green;
-    }
-  </style>
+<meta charset="UTF-8">
+<title>Hareket Amiri</title>
+<style>
+body{
+  font-family:Arial;
+  background:#eef2ff;
+  margin:0;
+  padding:20px;
+}
+.card{
+  background:white;
+  max-width:500px;
+  margin:auto;
+  padding:20px;
+  border-radius:10px;
+}
+select,button{
+  width:100%;
+  padding:10px;
+  margin-top:10px;
+}
+button{
+  background:#2563eb;
+  color:white;
+  border:none;
+  border-radius:6px;
+}
+</style>
 </head>
 <body>
-  <div class="container">
-    <h2>Hareket Amiri</h2>
 
-    <select id="hat">
-      <option>1 - Üniversite Ring</option>
-      <option>30 - Bahçeşehir Ring</option>
-      <option>12 - Yeşiltepe - Otogar - Jandarma</option>
-      <option>25 - Sarayyeri - Otogar</option>
-      <option>26 - Akşemsettin - Otogar</option>
-      <option>46 - Mamure - Otogar</option>
-      <option>43 - Düzce Üniversitesi - Bahçeşehir</option>
-    </select>
+<div class="card">
+<h2>Hareket Amiri</h2>
 
-    <select id="arac">
-      <option>Mavi Karsan Atak</option>
-      <option>Kırmızı Karsan Atak</option>
-      <option>TCV Karat</option>
-      <option>MAN Lion’s City G</option>
-      <option>Mercedes-Benz Conecto 2024</option>
-      <option>Otokar Sultan</option>
-      <option>BMC Procity TR</option>
-    </select>
+<select id="hat">
+  <option>1 - Üniversite Ring</option>
+  <option>30 - Bahçeşehir Ring</option>
+  <option>12 - Yeşiltepe - Otogar - Jandarma</option>
+  <option>25 - Sarayyeri - Otogar</option>
+  <option>26 - Akşemsettin - Otogar</option>
+  <option>46 - Mamure - Otogar</option>
+  <option>43 - Düzce Üniversitesi - Bahçeşehir</option>
+</select>
 
-    <select id="sofor">
-      <option value="sofor1">Şoför 1</option>
-      <option value="sofor2">Şoför 2</option>
-    </select>
+<select id="arac">
+  <option>Mavi Karsan Atak</option>
+  <option>Kırmızı Karsan Atak</option>
+  <option>TCV Karat</option>
+  <option>MAN Lions City G</option>
+  <option>Mercedes Conecto 2024</option>
+  <option>Otokar Sultan</option>
+  <option>BMC Procity TR</option>
+</select>
 
-    <button onclick="kaydet()">Seferi Kaydet</button>
-    <div id="msg"></div>
-  </div>
+<select id="sofor">
+  <option value="sofor1">Şoför 1</option>
+</select>
 
-  <script>
-    function kaydet() {
-      const sefer = {
-        hat: hat.value,
-        arac: arac.value,
-        sofor: sofor.value,
-        saat: new Date().toLocaleTimeString("tr-TR", {hour:"2-digit", minute:"2-digit"})
-      };
-      const s = JSON.parse(localStorage.getItem("seferler")) || [];
-      s.push(sefer);
-      localStorage.setItem("seferler", JSON.stringify(s));
-      msg.innerText = "Sefer kaydedildi ✅";
-    }
-  </script>
+<button onclick="kaydet()">Sefer Kaydet</button>
+<p id="msg"></p>
+<button onclick="cikisYap()" style="background:#f87171;">Çıkış Yap</button>
+</div>
+
+<script>
+let seferler = JSON.parse(localStorage.getItem("seferler")) || [];
+
+function kaydet(){
+  seferler.push({
+    hat: hat.value,
+    arac: arac.value,
+    sofor: sofor.value,
+    saat: new Date().toLocaleTimeString("tr-TR",{hour:"2-digit",minute:"2-digit"})
+  });
+  localStorage.setItem("seferler", JSON.stringify(seferler));
+  msg.innerText = "Sefer kaydedildi ✅";
+}
+
+function cikisYap(){
+  localStorage.removeItem("aktifKullanici");
+  window.location.href="index.html";
+}
+</script>
+
 </body>
 </html>
+
+
