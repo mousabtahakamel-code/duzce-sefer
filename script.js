@@ -1,7 +1,7 @@
 // İlk kurulum
 if (!localStorage.users) {
   localStorage.users = JSON.stringify([
-    {username:"34iett", password:"pogba", role:"owner", messages:[]},
+    {username:"owner", password:"123", role:"owner", messages:[]},
     {username:"amir", password:"123", role:"amir", messages:[]},
     {username:"sofor", password:"123", role:"sofor", messages:[]}
   ]);
@@ -118,4 +118,5 @@ function loadSoforPanel(){
     soforMessages.innerHTML += `[${m.date}] ${m.text}<br>`;
   });
 }
+
 
