@@ -61,15 +61,27 @@
     <div id="msg"></div>
   </div>
 
-  <script>
-    async function login() {
-      const u = user.value;
-      const p = pass.value;
-      const res = await fetch(`/api/login?u=${u}&p=${p}`);
-      const data = await res.json();
-      if (data.ok) location.href = data.page;
-      else msg.innerText = "Hatalı giriş";
-    }
+<script>
+function login() {
+  const u = user.value;
+  const p = pass.value;
+
+  if (u === "owner" && p === "1234") {
+    location.href = "owner.html";
+  }
+  else if (u === "amiri" && p === "1234") {
+    location.href = "amiri.html";
+  }
+  else if (u === "sofor" && p === "1234") {
+    location.href = "sofor.html";
+  }
+  else {
+    msg.innerText = "Hatalı giriş";
+  }
+}
+</script>
+
   </script>
 </body>
 </html>
+
