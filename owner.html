@@ -1,46 +1,150 @@
 <!DOCTYPE html>
-<html>
+<html lang="tr">
 <head>
-  <title>Owner</title>
-  <style>
-    body {
-      font-family: Arial;
-      background: #f2f4f8;
-    }
-    .container {
-      max-width: 500px;
-      margin: 50px auto;
-    }
-    .card {
-      background: white;
-      padding: 15px;
-      border-radius: 8px;
-      margin-bottom: 10px;
-      box-shadow: 0 5px 15px rgba(0,0,0,.1);
-    }
-  </style>
+<meta charset="UTF-8">
+<title>Owner Paneli</title>
+<style>
+body{
+  font-family:Arial;
+  background:#f1f5f9;
+  margin:0;
+  padding:20px;
+}
+.box{
+  background:white;
+  padding:20px;
+  border-radius:10px;
+  max-width:700px;
+  margin:auto;
+  box-shadow:0 5px 15px rgba(0,0,0,.1);
+}
+h2,h3{color:#1e40af}
+select,input,button{
+  width:100%;
+  padding:10px;
+  margin-top:10px;
+  border-radius:6px;
+  border:1px solid #ccc;
+}
+button{
+  background:#1e40af;
+  color:white;
+  border:none;
+  font-weight:bold;
+  cursor:pointer;
+}
+button.logout{
+  background:#f87171;
+}
+p{margin-top:5px;}
+hr{margin:20px 0;}
+</style>
 </head>
 <body>
-  <div class="container">
-    <h2>Tüm Seferler</h2>
-    <div id="liste"></div>
-  </div>
 
-  <script>
-    const s = JSON.parse(localStorage.getItem("seferler")) || [];
-    if (s.length === 0) {
-      liste.innerText = "Sefer yok";
-    } else {
-      s.forEach(x => {
-        liste.innerHTML += `
-          <div class="card">
-            <b>${x.hat}</b><br>
-            ${x.arac}<br>
-            ${x.sofor} • ${x.saat}
-          </div>
-        `;
-      });
-    }
-  </script>
+<div class="box">
+<h2>Owner Paneli</h2>
+
+<h3>Sefer Listesi</h3>
+<div id="liste" style="background:#eef; padding:10px; border-radius:6px; min-height:50px;"></div>
+
+<h3>Şifre Değiştir</h3>
+<select id="userSelect"></select>
+<input id="newPass" placeholder="Yeni şifre">
+<button onclick="degistir()">Güncelle</button>
+<p id="msg" style="color:red;"></p>
+
+<hr>
+
+<h3>Yeni Kullanıcı Ekle</h3>
+<input id="newUser" placeholder="Kullanıcı adı">
+<input id="newName" placeholder="İsim Soyisim">
+<input id="newPassAdd" placeholder="Şifre">
+<select id="roleSelect">
+  <option value="owner">Owner</option>
+  <option value="amiri">Hareket Amiri</option>
+  <option value="sofor">Şoför</option>
+</select>
+<button onclick="yeniKullanici()">Ekle</button>
+<p id="msgAdd" style="color:green;"></p>
+
+<hr>
+
+<button class="logout" onclick="cikisYap()">Çıkış Yap</button>
+
+</div>
+
+<script>
+// Kullanıcılar ve seferler
+let users = JSON.parse(localStorage.getItem("users")) || [];
+let seferler = JSON.parse(localStorage.getItem("seferler")) || [];
+
+// Kullanıcı seçme listesi
+function doldurUserSelect(){
+  userSelect.innerHTML = "";
+  users.forEach(u=>{
+    userSelect.innerHTML += `<option value="${u.user}">${u.name} (${u.user})</option>`;
+  });
+}
+
+// Seferleri listele
+function listeleSeferler(){
+  liste.innerHTML = "";
+  seferler.forEach(s=>{
+    liste.innerHTML += `• ${s.hat} | ${s.arac} | ${s.sofor}<br>`;
+  });
+}
+
+// Başlangıç
+doldurUserSelect();
+listeleSeferler();
+
+// Şifre değiştirme
+function degistir(){
+  const i = users.findIndex(x=>x.user===userSelect.value);
+  const pass = newPass.value.trim();
+  if(!pass){ msg.innerText="Yeni şifre boş olamaz ❌"; return; }
+  users[i].pass = pass;
+  localStorage.setItem("users", JSON.stringify(users));
+  msg.innerText="Şifre güncellendi ✅";
+  newPass.value="";
+}
+
+// Yeni kullanıcı ekleme
+function yeniKullanici(){
+  const user = newUser.value.trim();
+  const name = newName.value.trim();
+  const pass = newPassAdd.value.trim();
+  const role = roleSelect.value;
+
+  if(!user || !name || !pass){
+    msgAdd.innerText="Tüm alanları doldurun ❌";
+    return;
+  }
+
+  const page = role==="owner" ? "owner.html" : role==="amiri" ? "amiri.html" : "sofor.html";
+
+  users.push({user, pass, page, name});
+  localStorage.setItem("users", JSON.stringify(users));
+
+  msgAdd.innerText=`Kullanıcı eklendi ✅ (${user})`;
+
+  // inputları temizle
+  newUser.value="";
+  newName.value="";
+  newPassAdd.value="";
+
+  // kullanıcı listesini güncelle
+  doldurUserSelect();
+}
+
+// Çıkış
+function cikisYap(){
+  localStorage.removeItem("aktifKullanici");
+  window.location.href="index.html";
+}
+</script>
+
 </body>
 </html>
+
