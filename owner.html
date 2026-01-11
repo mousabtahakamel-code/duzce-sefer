@@ -4,75 +4,83 @@
 <meta charset="UTF-8">
 <title>Owner Paneli</title>
 <style>
-body{font-family:Arial;background:#f1f5f9;margin:0;padding:20px;}
-.box{background:white;padding:20px;border-radius:10px;max-width:700px;margin:auto;box-shadow:0 5px 15px rgba(0,0,0,.1);}
-h2,h3{color:#1e40af}
-select,input,button{width:100%;padding:10px;margin-top:10px;border-radius:6px;border:1px solid #ccc;}
-button{background:#1e40af;color:white;border:none;font-weight:bold;cursor:pointer;}
-button.logout{background:#f87171}
-p{margin-top:5px;}
-hr{margin:20px 0;}
+body{font-family:Arial;padding:20px;background:#f0f0f0;}
+h2{color:#1e40af;}
+input,select,button{padding:8px;margin-top:8px;width:200px;}
+button{background:#2563eb;color:white;border:none;border-radius:5px;}
+#sonuc{margin-top:10px;color:green;font-weight:bold;}
 </style>
 </head>
 <body>
 
 <script>
-// Owner yetki kontrolü
 const aktif = JSON.parse(localStorage.getItem("aktifKullanici"));
-if(!aktif || aktif.page !== "owner.html"){
-  alert("Bu sayfaya giriş yetkiniz yok!");
+if(!aktif || aktif.role !== "owner"){ window.location.href="index.html"; }
+
+let users = JSON.parse(localStorage.getItem("users"));
+</script>
+
+<h2>Owner Paneli</h2>
+
+<h3>Şifre Değiştir</h3>
+
+<select id="kisiSec"></select><br>
+<input type="password" id="yeniSifre" placeholder="Yeni Şifre"><br>
+<button onclick="sifreDegistir()">Şifreyi Değiştir</button>
+<p id="sonuc"></p>
+
+<button onclick="cikis()">Çıkış Yap</button>
+
+<script>
+const sec = document.getElementById("kisiSec");
+
+// Kullanıcı listesini doldur
+users.forEach(u=>{
+  // 34iett herkesin şifresini görebilir
+  if(aktif.user === "34iett"){
+    sec.innerHTML += `<option value="${u.user}">${u.user} (${u.role})</option>`;
+  } 
+  // Diğer ownerlar sadece kendini görebilir
+  else if(u.user === aktif.user){
+    sec.innerHTML += `<option value="${u.user}">${u.user}</option>`;
+  }
+});
+
+function sifreDegistir(){
+  const hedef = sec.value;
+  const yeni = document.getElementById("yeniSifre").value;
+  const sonuc = document.getElementById("sonuc");
+
+  if(!yeni){
+    sonuc.innerText="Şifre boş olamaz ❌";
+    return;
+  }
+
+  if(hedef === "34iett"){
+    sonuc.innerText="34iett şifresi değiştirilemez ❌";
+    return;
+  }
+
+  if(aktif.user !== "34iett" && hedef !== aktif.user){
+    sonuc.innerText="Yetkin yok ❌";
+    return;
+  }
+
+  users = users.map(u=>{
+    if(u.user === hedef){ u.pass = yeni; }
+    return u;
+  });
+
+  localStorage.setItem("users", JSON.stringify(users));
+  sonuc.innerText="Şifre değiştirildi ✅";
+}
+
+function cikis(){
+  localStorage.removeItem("aktifKullanici");
   window.location.href="index.html";
 }
 </script>
 
-<div class="box">
-<h2>Owner Paneli</h2>
-
-<h3>Şifre Değiştir</h3>
-<select id="userSelect"></select>
-<input id="newPass" placeholder="Yeni şifre">
-<button onclick="degistir()">Güncelle</button>
-<p id="msg" style="color:red;"></p>
-
-<hr>
-
-<h3>Yeni Kullanıcı Ekle</h3>
-<input id="newUser" placeholder="Kullanıcı adı">
-<input id="newName" placeholder="İsim Soyisim">
-<input id="newPassAdd" placeholder="Şifre">
-<select id="roleSelect">
-<option value="owner">Owner</option>
-<option value="amiri">Hareket Amiri</option>
-<option value="sofor">Şoför</option>
-</select>
-<button onclick="yeniKullanici()">Ekle</button>
-<p id="msgAdd" style="color:green;"></p>
-
-<hr>
-
-<h3>Kullanıcı Sil</h3>
-<select id="userDelete"></select>
-<button onclick="sil()">Sil</button>
-<p id="msgDel" style="color:red;"></p>
-
-<hr>
-
-<button class="logout" onclick="cikisYap()">Çıkış Yap</button>
-</div>
-
-<script>
-const korunanlar=["34iett"];
-async function fetchUsers(){ const res=await fetch('/api/users.js'); return await res.json();}
-async function updateUsers(users){await fetch('/api/users.js',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(users,null,2)});}
-async function doldurSelects(){const users=await fetchUsers(); userSelect.innerHTML=""; userDelete.innerHTML=""; users.forEach(u=>{userSelect.innerHTML+=`<option value="${u.user}">${u.name} (${u.user})</option>`; userDelete.innerHTML+=`<option value="${u.user}">${u.name} (${u.user})</option>`;});}
-async function degistir(){const secilen=userSelect.value; if(korunanlar.includes(secilen)){msg.innerText="Bu kullanıcının şifresi değiştirilemez ❌"; return;} const pass=newPass.value.trim(); if(!pass){msg.innerText="Yeni şifre boş olamaz ❌"; return;} let users=await fetchUsers(); const i=users.findIndex(x=>x.user===secilen); users[i].pass=pass; await updateUsers(users); msg.innerText="Şifre güncellendi ✅"; newPass.value="";}
-async function yeniKullanici(){const user=newUser.value.trim(); const name=newName.value.trim(); const pass=newPassAdd.value.trim(); const role=roleSelect.value; if(!user||!name||!pass){msgAdd.innerText="Tüm alanları doldurun ❌"; return;} let users=await fetchUsers(); const page=role==="owner"?"owner.html":role==="amiri"?"amiri.html":"sofor.html"; users.push({user,pass,page,name}); await updateUsers(users); msgAdd.innerText=`Kullanıcı eklendi ✅ (${user})`; newUser.value=""; newName.value=""; newPassAdd.value=""; await doldurSelects();}
-async function sil(){const secilen=userDelete.value; if(korunanlar.includes(secilen)){msgDel.innerText="Bu kullanıcı silinemez ❌"; return;} let users=await fetchUsers(); users=users.filter(u=>u.user!==secilen); await updateUsers(users); msgDel.innerText="Kullanıcı silindi ✅"; await doldurSelects();}
-function cikisYap(){localStorage.removeItem("aktifKullanici"); window.location.href="index.html";}
-doldurSelects();
-</script>
-
 </body>
 </html>
-
 
