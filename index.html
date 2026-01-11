@@ -62,26 +62,40 @@
   </div>
 
 <script>
-function login() {
-  const u = user.value;
-  const p = pass.value;
+  const users = [
+    // OWNER
+    { user: "34iett", pass: "mousab12", page: "owner.html", name: "WEB ISLEMCI" },
+    { user: "duzce", pass: "1234", page: "owner.html", name: "Patron" },
 
-  if (u === "owner" && p === "1234") {
-    location.href = "owner.html";
+    // HAREKET AMİRİ
+    { user: "amiri1", pass: "1234", page: "amiri.html", name: "Hareket Amiri 1" },
+    { user: "amiri2", pass: "1234", page: "amiri.html", name: "Hareket Amiri 2" },
+
+    // ŞOFÖR
+    { user: "sofor1", pass: "1111", page: "sofor.html", name: "Şoför 1" },
+    { user: "sofor2", pass: "2222", page: "sofor.html", name: "Şoför 2" }
+  ];
+
+  function login() {
+    const u = document.getElementById("user").value;
+    const p = document.getElementById("pass").value;
+    const msg = document.getElementById("msg");
+
+    const found = users.find(x => x.user === u && x.pass === p);
+
+    if (found) {
+      localStorage.setItem("aktifKullanici", JSON.stringify(found));
+      window.location.href = found.page;
+    } else {
+      msg.innerText = "Hatalı giriş";
+    }
   }
-  else if (u === "amiri" && p === "1234") {
-    location.href = "amiri.html";
-  }
-  else if (u === "sofor" && p === "1234") {
-    location.href = "sofor.html";
-  }
-  else {
-    msg.innerText = "Hatalı giriş";
-  }
-}
+</script>
+
 </script>
 
   </script>
 </body>
 </html>
+
 
