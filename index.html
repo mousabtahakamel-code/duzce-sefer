@@ -4,24 +4,53 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Düzce Ulaşım</title>
-<link rel="stylesheet" href="style.css">
+
+<style>
+body {
+  font-family: Arial;
+  background: #f2f2f2;
+  text-align: center;
+}
+.panel {
+  background: white;
+  max-width: 420px;
+  margin: 40px auto;
+  padding: 20px;
+  border-radius: 10px;
+}
+input, select, textarea, button {
+  width: 95%;
+  margin: 6px 0;
+  padding: 8px;
+}
+button {
+  background: #007bff;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+.hidden { display: none; }
+</style>
 </head>
+
 <body>
 
+<!-- LOGIN -->
 <div id="loginDiv" class="panel">
-  <h2>Giriş</h2>
+  <h2>Giriş Yap</h2>
   <input id="loginUser" placeholder="Kullanıcı Adı">
   <input id="loginPass" type="password" placeholder="Şifre">
-  <button onclick="login()">Giriş Yap</button>
+  <button onclick="login()">Giriş</button>
   <p id="loginMsg"></p>
 </div>
 
+<!-- OWNER -->
 <div id="ownerPanel" class="panel hidden">
   <h2>Owner Panel</h2>
-  <button onclick="logout()">Çıkış</button>
+  <button onclick="logout()">Çıkış Yap</button>
 
   <h3>Hesap Ekle</h3>
-  <input id="addUserName" placeholder="Kullanıcı">
+  <input id="addUserName" placeholder="Kullanıcı Adı">
   <input id="addUserPass" placeholder="Şifre">
   <select id="addUserRole">
     <option value="amir">Hareket Amir</option>
@@ -30,7 +59,7 @@
   <button onclick="addUser()">Ekle</button>
 
   <h3>Hesap Sil</h3>
-  <input id="removeUserName" placeholder="Kullanıcı">
+  <input id="removeUserName" placeholder="Kullanıcı Adı">
   <button onclick="removeUser()">Sil</button>
 
   <h3>Şifre Değiştir</h3>
@@ -43,9 +72,10 @@
   <button onclick="sendMessage()">Gönder</button>
 </div>
 
+<!-- AMIR -->
 <div id="amirPanel" class="panel hidden">
   <h2>Hareket Amir</h2>
-  <button onclick="logout()">Çıkış</button>
+  <button onclick="logout()">Çıkış Yap</button>
 
   <select id="soforSelect"></select>
 
@@ -72,15 +102,142 @@
   <div id="assignList"></div>
 </div>
 
+<!-- ŞOFÖR -->
 <div id="soforPanel" class="panel hidden">
-  <h2>Şoför</h2>
-  <button onclick="logout()">Çıkış</button>
+  <h2>Şoför Panel</h2>
+  <button onclick="logout()">Çıkış Yap</button>
   <div id="soforInfo"></div>
+
   <h3>Mesajlar</h3>
   <div id="soforMessages"></div>
 </div>
 
-<script src="script.js"></script>
+<script>
+// ----------- İLK KURULUM -----------
+if (!localStorage.users) {
+  localStorage.users = JSON.stringify([
+    {username:"owner", password:"123", role:"owner", messages:[]},
+    {username:"amir", password:"123", role:"amir", messages:[]},
+    {username:"sofor", password:"123", role:"sofor", messages:[]}
+  ]);
+  localStorage.assignments = JSON.stringify([]);
+}
+
+let currentUser = null;
+
+const getUsers = () => JSON.parse(localStorage.users);
+const saveUsers = u => localStorage.users = JSON.stringify(u);
+const getAssignments = () => JSON.parse(localStorage.assignments);
+const saveAssignments = a => localStorage.assignments = JSON.stringify(a);
+
+// ----------- LOGIN -----------
+function login(){
+  const u = document.getElementById("loginUser").value;
+  const p = document.getElementById("loginPass").value;
+
+  const user = getUsers().find(x => x.username === u && x.password === p);
+  if(!user){
+    document.getElementById("loginMsg").innerText = "Hatalı giriş";
+    return;
+  }
+
+  currentUser = user;
+  document.getElementById("loginDiv").classList.add("hidden");
+  document.getElementById(user.role + "Panel").classList.remove("hidden");
+
+  if(user.role === "amir") loadSofors();
+  if(user.role === "sofor") loadSoforPanel();
+}
+
+// ----------- LOGOUT -----------
+function logout(){
+  currentUser = null;
+  document.querySelectorAll(".panel").forEach(p=>p.classList.add("hidden"));
+  document.getElementById("loginDiv").classList.remove("hidden");
+}
+
+// ----------- OWNER -----------
+function addUser(){
+  let users = getUsers();
+  users.push({
+    username: addUserName.value,
+    password: addUserPass.value,
+    role: addUserRole.value,
+    messages:[]
+  });
+  saveUsers(users);
+  alert("Hesap eklendi");
+}
+
+function removeUser(){
+  let users = getUsers().filter(u => u.username !== removeUserName.value);
+  saveUsers(users);
+  alert("Hesap silindi");
+}
+
+function changePassword(){
+  let users = getUsers();
+  let u = users.find(x => x.username === changeUserName.value);
+  if(!u) return alert("Kullanıcı yok");
+  u.password = changeUserPass.value;
+  saveUsers(users);
+  alert("Şifre değişti");
+}
+
+function sendMessage(){
+  let users = getUsers();
+  users.forEach(u=>{
+    if(u.role !== "owner"){
+      u.messages.push({
+        text: ownerMessage.value,
+        date: new Date().toLocaleString()
+      });
+    }
+  });
+  saveUsers(users);
+  alert("Mesaj gönderildi");
+}
+
+// ----------- AMIR -----------
+function loadSofors(){
+  soforSelect.innerHTML="";
+  getUsers().filter(u=>u.role==="sofor").forEach(s=>{
+    soforSelect.innerHTML += `<option>${s.username}</option>`;
+  });
+}
+
+function assign(){
+  let a = getAssignments().filter(x=>x.sofor!==soforSelect.value);
+  a.push({
+    sofor: soforSelect.value,
+    hat: hatSelect.value,
+    arac: aracSelect.value
+  });
+  saveAssignments(a);
+  renderAssignments();
+}
+
+function renderAssignments(){
+  assignList.innerHTML="";
+  getAssignments().forEach(a=>{
+    assignList.innerHTML += `${a.sofor} → ${a.arac} | ${a.hat}<br>`;
+  });
+}
+
+// ----------- ŞOFÖR -----------
+function loadSoforPanel(){
+  const user = getUsers().find(u=>u.username===currentUser.username);
+  const a = getAssignments().find(x=>x.sofor===user.username);
+
+  soforInfo.innerHTML = a ? `${a.arac}<br>${a.hat}` : "Atama yok";
+
+  soforMessages.innerHTML="";
+  user.messages.forEach(m=>{
+    soforMessages.innerHTML += `[${m.date}] ${m.text}<br>`;
+  });
+}
+</script>
+
 </body>
 </html>
 
