@@ -4,37 +4,25 @@
 <meta charset="UTF-8">
 <title>Hareket Amiri Paneli</title>
 <style>
-body{font-family:Arial;background:#eef2ff;margin:0;padding:20px;}
-.card{background:white;max-width:500px;margin:auto;padding:20px;border-radius:10px;}
-select,button{width:100%;padding:10px;margin-top:10px;}
-button{background:#2563eb;color:white;border:none;border-radius:6px;cursor:pointer;}
-#seferler{margin-top:15px;background:#f1f5f9;padding:10px;border-radius:6px;min-height:50px;}
+body{font-family:Arial;padding:20px;background:#f0f0f0;}
+h2{color:#1e40af;}
+select,input,button{margin-top:8px;padding:8px;}
+button{background:#2563eb;color:white;border:none;border-radius:5px;}
+#seferler div{margin-top:5px;}
 </style>
 </head>
 <body>
 
 <script>
 const aktif = JSON.parse(localStorage.getItem("aktifKullanici"));
+if(!aktif || aktif.role !== "amiri"){ window.location.href="index.html"; }
 
-// Yetki kontrolü
-if(!aktif){
-  alert("Önce giriş yapmalısınız!");
-  window.location.href="index.html";
-} else if(aktif.page !== "amiri.html"){
-  alert("Bu sayfaya yetkiniz yok!");
-  window.location.href="index.html";
-}
-
-// Çıkış fonksiyonu
-function cikisYap(){
-  localStorage.removeItem("aktifKullanici");
-  window.location.href="index.html";
-}
+let seferler=[];
 </script>
 
 <h2>Hareket Amiri Paneli</h2>
 
-<h3>Hat Seç</h3>
+<label>Hat Seç:</label>
 <select id="hat">
 <option>1 - Üniversite Ring</option>
 <option>30 - Bahçeşehir Ring</option>
@@ -43,9 +31,9 @@ function cikisYap(){
 <option>26 - Akşemsettin - Otogar</option>
 <option>46 - Mamure - Otogar</option>
 <option>43 - Düzce Üniversitesi - Bahçeşehir</option>
-</select>
+</select><br>
 
-<h3>Araç Seç</h3>
+<label>Araç Seç:</label>
 <select id="arac">
 <option>Mavi Karsan Atak</option>
 <option>Kırmızı Karsan Atak</option>
@@ -54,52 +42,43 @@ function cikisYap(){
 <option>Mercedes Conecto 2024</option>
 <option>Otokar Sultan</option>
 <option>BMC Procity TR</option>
-</select>
+</select><br>
 
-<h3>Şoför Seç</h3>
-<select id="sofor"></select>
+<label>Şoför Seç:</label>
+<select id="sofor">
+<option>Şoför 1</option>
+<option>Şoför 2</option>
+</select><br>
 
 <button onclick="kaydet()">Sefer Kaydet</button>
-<p id="msg" style="color:green;"></p>
-
+<p id="msg" style="color:green"></p>
 <div id="seferler"></div>
 
-<button onclick="cikisYap()" style="margin-top:10px;background:#f87171;padding:10px;color:white;border:none;border-radius:6px;">Çıkış Yap</button>
-</div>
+<button onclick="cikis()">Çıkış Yap</button>
 
 <script>
-let seferler=[];
-let users=[];
-async function fetchUsers(){ const res=await fetch('/api/users.js'); users=await res.json(); return users;}
-async function fetchSeferler(){ const res=await fetch('/api/seferler.js'); seferler=await res.json(); return seferler;}
-async function updateSeferler(){await fetch('/api/seferler.js',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(seferler,null,2)});}
-async function init(){
-  await fetchUsers();
-  const soforler=users.filter(u=>u.page==="sofor.html");
-  soforler.forEach(s=>sofor.innerHTML+=`<option value="${s.user}">${s.name}</option>`);
-  await fetchSeferler();
+function kaydet(){
+  const hat = document.getElementById("hat").value;
+  const arac = document.getElementById("arac").value;
+  const sofor = document.getElementById("sofor").value;
+  const saat = new Date().toLocaleTimeString();
+  seferler.push({hat,arac,sofor,saat});
   listele();
+  document.getElementById("msg").innerText="Sefer kaydedildi ✅";
 }
+
 function listele(){
   const div=document.getElementById("seferler");
   div.innerHTML="<h3>Seferler</h3>";
-  if(seferler.length===0){div.innerHTML+="Henüz sefer yok.";}
-  seferler.forEach(s=>{div.innerHTML+=`<div>• ${s.hat} | ${s.arac} | ${s.sofor} | ${s.saat}</div>`;});
+  seferler.forEach(s=>{
+    div.innerHTML+=`<div>${s.hat} | ${s.arac} | ${s.sofor} | ${s.saat}</div>`;
+  });
 }
-async function kaydet(){
-  const yeni={
-    hat:hat.value,
-    arac:arac.value,
-    sofor:sofor.value,
-    saat:new Date().toLocaleTimeString("tr-TR",{hour:"2-digit",minute:"2-digit"})
-  };
-  seferler.push(yeni);
-  await updateSeferler();
-  msg.innerText="Sefer kaydedildi ✅";
-  listele();
+
+function cikis(){
+  localStorage.removeItem("aktifKullanici");
+  window.location.href="index.html";
 }
-function cikisYap(){localStorage.removeItem("aktifKullanici"); window.location.href="index.html";}
-init();
 </script>
 
 </body>
