@@ -4,34 +4,29 @@
 <meta charset="UTF-8">
 <title>Şoför Paneli</title>
 <style>
-body{font-family:Arial;background:#f8fafc;margin:0;padding:20px;}
-.card{background:white;max-width:400px;margin:auto;padding:20px;border-radius:10px;text-align:center;}
+body{font-family:Arial;padding:20px;background:#f0f0f0;}
+h2{color:#1e40af;}
 </style>
 </head>
 <body>
 
 <script>
-const aktif=JSON.parse(localStorage.getItem("aktifKullanici"));
-if(!aktif || aktif.page!=="sofor.html"){
-  alert("Bu sayfaya giriş yetkiniz yok!");
+const aktif = JSON.parse(localStorage.getItem("aktifKullanici"));
+if(!aktif || aktif.role !== "sofor"){ window.location.href="index.html"; }
+</script>
+
+<h2>Şoför Paneli</h2>
+<div id="gorev">Henüz görev yok</div>
+<button onclick="cikis()">Çıkış Yap</button>
+
+<script>
+function cikis(){
+  localStorage.removeItem("aktifKullanici");
   window.location.href="index.html";
 }
 </script>
 
-<div class="card">
-<h2>Görevim</h2>
-<div id="gorev"></div>
-<button onclick="cikisYap()" style="margin-top:15px;background:#f87171;padding:10px;color:white;border:none;border-radius:6px;">Çıkış Yap</button>
-</div>
-
-<script>
-let seferler=[];
-async function fetchSeferler(){ const res=await fetch('/api/seferler.js'); seferler=await res.json();}
-async function init(){ await fetchSeferler(); const g=seferler.filter(x=>x.sofor===aktif.user).pop(); document.getElementById("gorev").innerHTML=g?`<b>${g.hat}</b><br>${g.arac}<br>${g.sofor} | ${g.saat}`:"Görev yok"; }
-function cikisYap(){localStorage.removeItem("aktifKullanici"); window.location.href="index.html";}
-init();
-</script>
-
 </body>
 </html>
+
 
