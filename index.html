@@ -2,10 +2,14 @@
 <html lang="tr">
 <head>
 <meta charset="UTF-8">
-<title>Giriş</title>
+<title>Düzce Ulaşım Giriş</title>
+
+<!-- Supabase CDN -->
+<script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+
 <style>
 body{
-  font-family:Arial;
+  font-family:Arial, Helvetica, sans-serif;
   background:linear-gradient(135deg,#1e40af,#2563eb);
   height:100vh;
   margin:0;
@@ -20,7 +24,7 @@ body{
   border-radius:12px;
   box-shadow:0 10px 25px rgba(0,0,0,.2);
 }
-h2{text-align:center}
+h2{text-align:center;margin-bottom:20px}
 input,button{
   width:100%;
   padding:12px;
@@ -33,53 +37,72 @@ button{
   color:white;
   border:none;
   font-weight:bold;
+  cursor:pointer;
 }
-#msg{color:red;text-align:center;margin-top:10px}
+#msg{
+  color:red;
+  text-align:center;
+  margin-top:10px;
+}
 </style>
 </head>
 <body>
 
 <div class="card">
   <h2>Düzce Ulaşım</h2>
-  <input id="user" placeholder="Kullanıcı adı">
-  <input id="pass" type="password" placeholder="Şifre">
-  <button type="button" onclick="login()">Giriş Yap</button>
+
+  <input id="email" type="email" placeholder="E-posta">
+  <input id="password" type="password" placeholder="Şifre">
+
+  <button onclick="login()">Giriş Yap</button>
   <div id="msg"></div>
 </div>
 
 <script>
-// Login fonksiyonu
-function login(){
-  const u = document.getElementById("user").value.trim();
-  const p = document.getElementById("pass").value.trim();
+/* ================================
+   🔴 BURAYI DEĞİŞTİR
+================================ */
+const SUPABASE_URL = "https://asbuijksydmwlpinbjcn.supabase.co";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFzYnVpamtzeWRtd2xwaW5iamNuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjgyODMzNzUsImV4cCI6MjA4Mzg1OTM3NX0.naOIIqO9WFjOhFmzNJT0orx1N5TBP_tcGV70W1Iak70";
+/* ================================ */
+
+const supabase = supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_ANON_KEY
+);
+
+// Login
+async function login(){
+  const email = document.getElementById("email").value.trim();
+  const password = document.getElementById("password").value.trim();
   const msg = document.getElementById("msg");
 
-  const users = JSON.parse(localStorage.getItem("users")) || [];
+  msg.innerText = "Giriş yapılıyor...";
 
-  const found = users.find(x=>x.user===u && x.pass===p);
+  const { data, error } = await supabase.auth.signInWithPassword({
+    email: email,
+    password: password
+  });
 
-  if(found){
-    localStorage.setItem("aktifKullanici", JSON.stringify(found));
-    window.location.href = found.page;
-  } else {
+  if(error){
     msg.innerText = "Hatalı giriş ❌";
+    return;
   }
-}
 
-// Başlangıç users set (sadece ilk deploy için)
-if(!localStorage.getItem("users")){
-  const initUsers = [
-    {user:"34iett", pass:"mousab12", page:"owner.html", name:"WEB ISLEMCI"},
-    {user:"duzce", pass:"1234", page:"owner.html", name:"Patron"},
-    {user:"amiri1", pass:"1111", page:"amiri.html", name:"Hareket Amiri 1"},
-    {user:"sofor1", pass:"3333", page:"sofor.html", name:"Şoför 1"}
-  ];
-  localStorage.setItem("users", JSON.stringify(initUsers));
-}
+  // Giriş başarılı
+  msg.style.color = "green";
+  msg.innerText = "Giriş başarılı ✅";
 
-// Başlangıç seferler (opsiyonel boş array)
-if(!localStorage.getItem("seferler")){
-  localStorage.setItem("seferler", JSON.stringify([]));
+  // Rol sayfasına yönlendirme (metadata)
+  const role = data.user.user_metadata.role;
+
+  if(role === "owner"){
+    window.location.href = "owner.html";
+  } else if(role === "amiri"){
+    window.location.href = "amiri.html";
+  } else {
+    window.location.href = "sofor.html";
+  }
 }
 </script>
 
