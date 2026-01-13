@@ -2,14 +2,15 @@
 <html lang="tr">
 <head>
 <meta charset="UTF-8">
-<title>Düzce Ulaşım Giriş</title>
+<title>Düzce Ulaşım - Giriş</title>
 
+<!-- Supabase CDN -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
 body{
-  font-family:Arial;
-  background:linear-gradient(135deg,#1e40af,#2563eb);
+  font-family: Arial;
+  background: linear-gradient(135deg,#1e40af,#2563eb);
   height:100vh;
   margin:0;
   display:flex;
@@ -21,19 +22,28 @@ body{
   padding:30px;
   width:320px;
   border-radius:12px;
+  box-shadow:0 10px 25px rgba(0,0,0,.2);
 }
+h2{text-align:center}
 input,button{
   width:100%;
   padding:12px;
   margin-top:12px;
+  border-radius:6px;
 }
+input{border:1px solid #ccc}
 button{
   background:#2563eb;
   color:white;
   border:none;
+  font-weight:bold;
   cursor:pointer;
 }
-#msg{text-align:center;margin-top:10px}
+#msg{
+  text-align:center;
+  margin-top:10px;
+  color:red;
+}
 </style>
 </head>
 <body>
@@ -45,16 +55,21 @@ button{
   <input id="password" type="password" placeholder="Şifre">
 
   <button id="loginBtn">Giriş Yap</button>
+
   <div id="msg"></div>
 </div>
 
 <script>
-const SUPABASE_URL = "https://asbuijksydmwlpinbjcn.supabase.co";
-const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFzYnVpamtzeWRtd2xwaW5iamNuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjgyODMzNzUsImV4cCI6MjA4Mzg1OTM3NX0.naOIIqO9WFjOhFmzNJT0orx1N5TBP_tcGV70W1Iak70";
+/* 🔧 SUPABASE BİLGİLERİN */
+const SUPABASE_URL = "https://XXXX.supabase.co";
+const SUPABASE_ANON_KEY = "ANON_PUBLIC_KEY";
 
-const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+const supabaseClient = supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_ANON_KEY
+);
 
-document.getElementById("loginBtn").onclick = login;
+document.getElementById("loginBtn").addEventListener("click", login);
 
 async function login(){
   const username = document.getElementById("username").value.trim();
@@ -66,11 +81,13 @@ async function login(){
     return;
   }
 
+  // username → fake email
   const email = username + "@duzce.local";
 
   msg.innerText = "Giriş yapılıyor...";
 
-  const { data, error } = await sb.auth.signInWithPassword({
+  // 🔐 LOGIN
+  const { data, error } = await supabaseClient.auth.signInWithPassword({
     email,
     password
   });
@@ -80,31 +97,38 @@ async function login(){
     return;
   }
 
-  // 🔥 PROFİLİ DB'DEN AL
-  const { data: profile, error: perr } = await sb
+  // 🧠 PROFİLİ AL
+  const { data: profile, error: pErr } = await supabaseClient
     .from("profiles")
     .select("role")
     .eq("id", data.user.id)
     .single();
 
-  if(perr || !profile){
-    alert("PROFILE BULUNAMADI");
-    msg.innerText = "Profil bulunamadı ❌";
+  if(pErr || !profile){
+    msg.innerText = "Rol bulunamadı ❌";
+    alert("DEBUG: profile yok");
     return;
   }
 
   // 🧪 DEBUG
-  alert("ROLE: " + profile.role);
+  alert("ROLE = " + profile.role);
 
+  // 🔀 YÖNLENDİRME
   if(profile.role === "owner"){
     location.href = "owner.html";
   } else if(profile.role === "amiri"){
     location.href = "amiri.html";
-  } else {
+  } else if(profile.role === "sofor"){
     location.href = "sofor.html";
+  } else {
+    msg.innerText = "Geçersiz rol ❌";
   }
 }
 </script>
+
+</body>
+</html>
+
 
 
 
