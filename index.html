@@ -4,7 +4,6 @@
 <meta charset="UTF-8">
 <title>Düzce Ulaşım Giriş</title>
 
-<!-- SUPABASE CDN (ÇALIŞAN) -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
@@ -34,10 +33,7 @@ button{
   border:none;
   cursor:pointer;
 }
-#msg{
-  margin-top:10px;
-  text-align:center;
-}
+#msg{text-align:center;margin-top:10px}
 </style>
 </head>
 <body>
@@ -45,7 +41,7 @@ button{
 <div class="card">
   <h2>Düzce Ulaşım</h2>
 
-  <input id="email" placeholder="E-posta">
+  <input id="username" placeholder="Kullanıcı adı">
   <input id="password" type="password" placeholder="Şifre">
 
   <button id="loginBtn">Giriş Yap</button>
@@ -53,51 +49,48 @@ button{
 </div>
 
 <script>
-/* 🔴 BURAYI DOLDUR */
 const SUPABASE_URL = "https://asbuijksydmwlpinbjcn.supabase.co";
 const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFzYnVpamtzeWRtd2xwaW5iamNuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjgyODMzNzUsImV4cCI6MjA4Mzg1OTM3NX0.naOIIqO9WFjOhFmzNJT0orx1N5TBP_tcGV70W1Iak70";
 
-/* ❗ isim çakışması yok */
-const sb = supabase.createClient(
-  SUPABASE_URL,
-  SUPABASE_ANON_KEY
-);
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-document.getElementById("loginBtn").addEventListener("click", login);
+document.getElementById("loginBtn").onclick = login;
 
 async function login(){
-  const email = document.getElementById("email").value.trim();
+  const username = document.getElementById("username").value.trim();
   const password = document.getElementById("password").value.trim();
   const msg = document.getElementById("msg");
 
-  msg.style.color = "black";
+  if(!username || !password){
+    msg.innerText = "Alanlar boş ❌";
+    return;
+  }
+
+  // 🔥 KULLANICI ADINDAN SAHTE E-POSTA
+  const fakeEmail = username + "@duzce.local";
+
   msg.innerText = "Giriş yapılıyor...";
 
   const { data, error } = await sb.auth.signInWithPassword({
-    email,
+    email: fakeEmail,
     password
   });
 
   if(error){
-    msg.style.color = "red";
-    msg.innerText = error.message;
+    msg.innerText = "Hatalı giriş ❌";
     return;
   }
 
-  msg.style.color = "green";
-  msg.innerText = "Giriş başarılı ✅";
-
   const role = data.user.user_metadata.role;
 
-  if(role === "owner") location.href="owner.html";
-  else if(role === "amiri") location.href="amiri.html";
+  if(role==="owner") location.href="owner.html";
+  else if(role==="amiri") location.href="amiri.html";
   else location.href="sofor.html";
 }
 </script>
 
 </body>
 </html>
-
 
 
 
