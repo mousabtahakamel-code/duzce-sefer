@@ -66,13 +66,12 @@ async function login(){
     return;
   }
 
-  // 🔥 KULLANICI ADINDAN SAHTE E-POSTA
-  const fakeEmail = username + "@duzce.local";
+  const email = username + "@duzce.local";
 
   msg.innerText = "Giriş yapılıyor...";
 
   const { data, error } = await sb.auth.signInWithPassword({
-    email: fakeEmail,
+    email,
     password
   });
 
@@ -81,16 +80,32 @@ async function login(){
     return;
   }
 
-  const role = data.user.user_metadata.role;
+  // 🔥 PROFİLİ DB'DEN AL
+  const { data: profile, error: perr } = await sb
+    .from("profiles")
+    .select("role")
+    .eq("id", data.user.id)
+    .single();
 
-  if(role==="owner") location.href="owner.html";
-  else if(role==="amiri") location.href="amiri.html";
-  else location.href="sofor.html";
+  if(perr || !profile){
+    alert("PROFILE BULUNAMADI");
+    msg.innerText = "Profil bulunamadı ❌";
+    return;
+  }
+
+  // 🧪 DEBUG
+  alert("ROLE: " + profile.role);
+
+  if(profile.role === "owner"){
+    location.href = "owner.html";
+  } else if(profile.role === "amiri"){
+    location.href = "amiri.html";
+  } else {
+    location.href = "sofor.html";
+  }
 }
 </script>
 
-</body>
-</html>
 
 
 
