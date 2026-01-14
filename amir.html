@@ -3,46 +3,18 @@
 <head>
 <meta charset="UTF-8">
 <title>Hareket Amiri</title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script defer src="app.js"></script>
 <style>
-body{font-family:Arial;background:#f1f5f9;padding:20px}
-.box{background:#fff;max-width:520px;margin:auto;padding:20px;border-radius:10px}
+body{font-family:Arial;background:#eef;padding:20px}
+.box{background:white;padding:20px;max-width:500px;margin:auto}
 select,button{width:100%;padding:10px;margin-top:10px}
-#saatler{
-  display:grid;
-  grid-template-columns:repeat(4,1fr);
-  gap:6px;
-  margin-top:10px
-}
-#saatler button{
-  padding:8px;
-  border:1px solid #ccc;
-  background:#e5e7eb;
-  cursor:pointer
-}
-#saatler button.active{
-  background:#22c55e;color:#fff
-}
-button.main{background:#2563eb;color:#fff;border:none}
-button.logout{background:#f87171;color:#fff;border:none}
+.time-btn{padding:6px;margin:3px}
+.active{background:#2563eb;color:white}
 </style>
 </head>
 <body>
 
 <div class="box">
-<h2>Hareket Amiri</h2>
-
-<h4>Şoförler</h4>
-<div id="soforler"></div>
-
-<h4>Yön</h4>
-<select id="yon">
-  <option value="Gidiş">Gidiş</option>
-  <option value="Dönüş">Dönüş</option>
-</select>
-
+<h3>Hareket Amiri Paneli</h3>
 
 <select id="hat">
   <option>1 - Üniversite Ring</option>
@@ -54,28 +26,81 @@ button.logout{background:#f87171;color:#fff;border:none}
   <option>43 - Düzce Üniversitesi - Bahçeşehir</option>
 </select>
 
+<select id="yon">
+  <option>Gidiş</option>
+  <option>Dönüş</option>
+</select>
+
 <select id="arac">
   <option>Mavi Karsan Atak</option>
   <option>Kırmızı Karsan Atak</option>
   <option>TCV Karat</option>
   <option>MAN Lions City G</option>
-  <option>Mercedes Conecto 2024</option>
+  <option>Mercedes Benz Conecto 2024</option>
   <option>Otokar Sultan</option>
   <option>BMC Procity TR</option>
 </select>
 
-<h4>Saat Seç (5 dk)</h4>
+<select id="sofor">
+  <option value="sofor">Şoför</option>
+</select>
+
+<h4>Saatler</h4>
 <div id="saatler"></div>
-<input type="hidden" id="saat">
 
-<button class="main" onclick="seferEkle()">Sefer Ata</button>
+<button onclick="ata()">Sefer Ata</button>
+<button onclick="cikis()">Çıkış</button>
 <p id="msg"></p>
-
-<button class="logout" onclick="logout()">Çıkış</button>
 </div>
+
+<script>
+const saatlerDiv=document.getElementById("saatler");
+let secilen=[];
+
+for(let h=5;h<24;h++){
+  for(let m=0;m<60;m+=5){
+    const s=`${String(h).padStart(2,"0")}:${String(m).padStart(2,"0")}`;
+    const b=document.createElement("button");
+    b.innerText=s;
+    b.className="time-btn";
+    b.onclick=()=>{
+      if(secilen.includes(s)){
+        secilen=secilen.filter(x=>x!==s);
+        b.classList.remove("active");
+      }else{
+        secilen.push(s);
+        b.classList.add("active");
+      }
+    }
+    saatlerDiv.appendChild(b);
+  }
+}
+
+function ata(){
+  if(secilen.length===0){msg.innerText="Saat seç";return;}
+  let seferler=JSON.parse(localStorage.getItem("seferler"));
+  secilen.forEach(s=>{
+    seferler.push({
+      hat:hat.value,
+      yon:yon.value,
+      arac:arac.value,
+      sofor:sofor.value,
+      saat:s,
+      durum:"Bekliyor"
+    });
+  });
+  localStorage.setItem("seferler",JSON.stringify(seferler));
+  msg.innerText="Seferler atandı";
+  secilen=[];
+  document.querySelectorAll(".active").forEach(x=>x.classList.remove("active"));
+}
+
+function cikis(){
+  localStorage.removeItem("aktif");
+  location.href="index.html";
+}
+</script>
 
 </body>
 </html>
-
-
 
