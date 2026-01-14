@@ -69,6 +69,29 @@ function saatButonlariOlustur(){
     }
   }
 }
+// ===============================
+// ŞOFÖRLERİ YÜKLE (AMİR)
+// ===============================
+async function soforleriYukle(){
+  const div = document.getElementById("soforler");
+  if(!div) return;
+
+  const { data } = await supabaseClient
+    .from("users")
+    .select("username,name")
+    .eq("role","sofor");
+
+  div.innerHTML = "";
+
+  data.forEach(s=>{
+    div.innerHTML += `
+      <label>
+        <input type="checkbox" value="${s.username}">
+        ${s.name} (${s.username})
+      </label><br>
+    `;
+  });
+}
 
 // ===============================
 // SEFER ATA (AMİR)
@@ -117,4 +140,5 @@ function logout(){
 document.addEventListener("DOMContentLoaded", ()=>{
   saatButonlariOlustur();
 });
+
 
