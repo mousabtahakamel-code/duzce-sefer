@@ -1,7 +1,7 @@
 // ===============================
 // SUPABASE AYARLARI
 // ===============================
-const SUPABASE_URL = "https://asbuijksydmwlpinbjcn.supabase.co";
+const SUPABASE_URL = "https://asbuijksydmwlpinbjcn.supabase.co/";
 const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFzYnVpamtzeWRtd2xwaW5iamNuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjgyODMzNzUsImV4cCI6MjA4Mzg1OTM3NX0.naOIIqO9WFjOhFmzNJT0orx1N5TBP_tcGV70W1Iak70";
 
 const supabaseClient = supabase.createClient(
@@ -10,30 +10,18 @@ const supabaseClient = supabase.createClient(
 );
 
 // ===============================
-// GİRİŞ FONKSİYONU
+// GİRİŞ
 // ===============================
-async function login() {
-  const usernameInput = document.getElementById("username");
-  const pinInput = document.getElementById("pin");
+async function login(){
+  const username = document.getElementById("username")?.value.trim();
+  const pin = document.getElementById("pin")?.value.trim();
   const msg = document.getElementById("msg");
 
-  // EMNİYET
-  if (!usernameInput || !pinInput) {
-    alert("INPUT BULUNAMADI");
-    return;
-  }
-
-  const username = usernameInput.value.trim();
-  const pin = pinInput.value.trim();
-
-  if (username === "" || pin === "") {
+  if(!username || !pin){
     msg.innerText = "Kullanıcı adı ve PIN gir ❌";
     return;
   }
 
-  msg.innerText = "Kontrol ediliyor...";
-
-  // SUPABASE SORGUSU
   const { data, error } = await supabaseClient
     .from("users")
     .select("*")
@@ -41,94 +29,92 @@ async function login() {
     .eq("pin", pin)
     .limit(1);
 
-  if (error) {
-    console.error(error);
-    msg.innerText = "Sunucu hatası ❌";
-    return;
-  }
-
-  if (!data || data.length === 0) {
+  if(error || !data || data.length===0){
     msg.innerText = "Hatalı giriş ❌";
     return;
   }
 
-  const user = data[0];
+  localStorage.setItem("activeUser", JSON.stringify(data[0]));
 
-  // OTURUM KAYDET
-  localStorage.setItem("activeUser", JSON.stringify(user));
+  if(data[0].role === "amir") location.href="amir.html";
+  else location.href="sofor.html";
+}
 
-  // ROLE GÖRE YÖNLENDİR
-  if (user.role === "amir") {
-    window.location.href = "amir.html";
-  } else if (user.role === "sofor") {
-    window.location.href = "sofor.html";
-  } else {
-    msg.innerText = "Rol tanımsız ❌";
+// ===============================
+// SAAT BUTONLARI (5 DK)
+// ===============================
+function saatButonlariOlustur(){
+  const div = document.getElementById("saatler");
+  if(!div) return;
+
+  div.innerHTML = "";
+
+  for(let h=0; h<24; h++){
+    for(let m=0; m<60; m+=5){
+      const hh = String(h).padStart(2,"0");
+      const mm = String(m).padStart(2,"0");
+      const saat = `${hh}:${mm}`;
+
+      const b = document.createElement("button");
+      b.innerText = saat;
+
+      b.onclick = ()=>{
+        document.getElementById("saat").value = saat;
+        document.querySelectorAll("#saatler button")
+          .forEach(x=>x.classList.remove("active"));
+        b.classList.add("active");
+      };
+
+      div.appendChild(b);
+    }
   }
 }
 
 // ===============================
-// SAYFA KORUMA (AMİR / ŞOFÖR)
+// SEFER ATA (AMİR)
 // ===============================
-function protectPage(expectedRole) {
-  const raw = localStorage.getItem("activeUser");
-  if (!raw) {
-    window.location.href = "index.html";
+async function seferEkle(){
+  const user = JSON.parse(localStorage.getItem("activeUser"));
+  if(!user || user.role!=="amir"){
+    alert("Yetkisiz");
     return;
   }
 
-  const user = JSON.parse(raw);
-  if (user.role !== expectedRole) {
-    window.location.href = "index.html";
+  const sofor = document.getElementById("sofor").value;
+  const hat = document.getElementById("hat").value;
+  const arac = document.getElementById("arac").value;
+  const saat = document.getElementById("saat").value;
+  const msg = document.getElementById("msg");
+
+  if(!saat){
+    msg.innerText = "Saat seç ❌";
+    return;
   }
+
+  const { error } = await supabaseClient
+    .from("seferler")
+    .insert({
+      sofor_username: sofor,
+      hat,
+      arac,
+      saat
+    });
+
+  msg.innerText = error ? "Hata ❌" : "Sefer atandı ✅";
 }
 
 // ===============================
 // ÇIKIŞ
 // ===============================
-function logout() {
+function logout(){
   localStorage.removeItem("activeUser");
-  window.location.href = "index.html";
+  location.href="index.html";
 }
 
 // ===============================
-// ŞOFÖR SEFERLERİNİ YÜKLE
+// SAYFA YÜKLENİNCE
 // ===============================
-async function loadSoforSeferleri() {
-  const raw = localStorage.getItem("activeUser");
-  if (!raw) return;
+document.addEventListener("DOMContentLoaded", ()=>{
+  saatButonlariOlustur();
+});
 
-  const user = JSON.parse(raw);
-
-  const { data } = await supabaseClient
-    .from("seferler")
-    .select("*")
-    .eq("sofor_username", user.username)
-    .order("created_at", { ascending: false });
-
-  const liste = document.getElementById("liste");
-  if (!liste) return;
-
-  liste.innerHTML = "";
-
-  if (!data || data.length === 0) {
-    liste.innerHTML = "Sefer yok";
-    return;
-  }
-
-  data.forEach(s => {
-    const div = document.createElement("div");
-    div.style.border = "1px solid #ccc";
-    div.style.padding = "10px";
-    div.style.marginTop = "10px";
-
-    div.innerHTML = `
-      <b>${s.hat}</b><br>
-      ${s.arac}<br>
-      Saat: ${s.saat}<br>
-      Durum: ${s.durum}
-    `;
-
-    liste.appendChild(div);
-  });
-}
