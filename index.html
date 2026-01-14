@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<title>Düzce Ulaşım Giriş</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script defer src="app.js"></script>
+<style>
+body{
+  margin:0;
+  height:100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:linear-gradient(135deg,#1e3a8a,#2563eb);
+  font-family:Arial;
+}
+.card{
+  background:#fff;
+  padding:25px;
+  width:320px;
+  border-radius:12px;
+  box-shadow:0 10px 25px rgba(0,0,0,.2);
+}
+input,button{
+  width:100%;
+  padding:12px;
+  margin-top:10px;
+}
+button{
+  background:#2563eb;
+  color:#fff;
+  border:none;
+  font-weight:bold;
+}
+#msg{color:red;text-align:center;margin-top:10px}
+</style>
+</head>
+<body>
+
+<div class="card">
+  <h2 style="text-align:center">Düzce Ulaşım</h2>
+  <input id="username" placeholder="Kullanıcı adı">
+  <input id="pin" type="password" placeholder="PIN">
+  <button onclick="login()">Giriş Yap</button>
+  <div id="msg"></div>
+</div>
+
+</body>
+</html>

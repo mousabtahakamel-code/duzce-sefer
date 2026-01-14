@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<title>Hareket Amiri</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script defer src="app.js"></script>
+<style>
+body{font-family:Arial;background:#f1f5f9;padding:20px}
+.box{background:#fff;max-width:500px;margin:auto;padding:20px;border-radius:10px}
+select,input,button{width:100%;padding:10px;margin-top:10px}
+button{background:#2563eb;color:#fff;border:none}
+</style>
+</head>
+<body>
+
+<div class="box">
+<h2>Hareket Amiri Paneli</h2>
+
+<select id="sofor">
+  <option value="sofor">Şoför</option>
+</select>
+
+<select id="hat">
+  <option>1 - Üniversite Ring</option>
+  <option>30 - Bahçeşehir Ring</option>
+  <option>12 - Yeşiltepe - Otogar - Jandarma</option>
+  <option>25 - Sarayyeri - Otogar</option>
+  <option>26 - Akşemsettin - Otogar</option>
+  <option>46 - Mamure - Otogar</option>
+  <option>43 - Düzce Üniversitesi - Bahçeşehir</option>
+</select>
+
+<select id="arac">
+  <option>Mavi Karsan Atak</option>
+  <option>Kırmızı Karsan Atak</option>
+  <option>TCV Karat</option>
+  <option>MAN Lions City G</option>
+  <option>Mercedes Conecto 2024</option>
+  <option>Otokar Sultan</option>
+  <option>BMC Procity TR</option>
+</select>
+
+<input id="saat" placeholder="Saat (örn 14:30)">
+<button onclick="seferEkle()">Sefer Ata</button>
+<p id="msg"></p>
+
+<button onclick="logout()" style="background:#f87171">Çıkış</button>
+</div>
+
+</body>
+</html>
