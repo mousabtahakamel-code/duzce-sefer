@@ -8,15 +8,31 @@
 <script defer src="app.js"></script>
 <style>
 body{font-family:Arial;background:#f1f5f9;padding:20px}
-.box{background:#fff;max-width:500px;margin:auto;padding:20px;border-radius:10px}
-select,input,button{width:100%;padding:10px;margin-top:10px}
-button{background:#2563eb;color:#fff;border:none}
+.box{background:#fff;max-width:520px;margin:auto;padding:20px;border-radius:10px}
+select,button{width:100%;padding:10px;margin-top:10px}
+#saatler{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:6px;
+  margin-top:10px
+}
+#saatler button{
+  padding:8px;
+  border:1px solid #ccc;
+  background:#e5e7eb;
+  cursor:pointer
+}
+#saatler button.active{
+  background:#22c55e;color:#fff
+}
+button.main{background:#2563eb;color:#fff;border:none}
+button.logout{background:#f87171;color:#fff;border:none}
 </style>
 </head>
 <body>
 
 <div class="box">
-<h2>Hareket Amiri Paneli</h2>
+<h2>Hareket Amiri</h2>
 
 <select id="sofor">
   <option value="sofor">Şoför</option>
@@ -42,12 +58,17 @@ button{background:#2563eb;color:#fff;border:none}
   <option>BMC Procity TR</option>
 </select>
 
-<input id="saat" placeholder="Saat (örn 14:30)">
-<button onclick="seferEkle()">Sefer Ata</button>
+<h4>Saat Seç (5 dk)</h4>
+<div id="saatler"></div>
+<input type="hidden" id="saat">
+
+<button class="main" onclick="seferEkle()">Sefer Ata</button>
 <p id="msg"></p>
 
-<button onclick="logout()" style="background:#f87171">Çıkış</button>
+<button class="logout" onclick="logout()">Çıkış</button>
 </div>
 
 </body>
 </html>
+
+
