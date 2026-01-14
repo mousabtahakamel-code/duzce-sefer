@@ -2,24 +2,76 @@
 <html lang="tr">
 <head>
 <meta charset="UTF-8">
-<title>Düzce Ulaşım Giriş</title>
+<title>Düzce Ulaşım - Giriş</title>
 <style>
-body{font-family:Arial;background:#f2f2f2}
-.box{width:300px;margin:100px auto;background:#fff;padding:20px;border-radius:8px}
-input,button{width:100%;padding:10px;margin-top:10px}
+body{
+  font-family:Arial;
+  background:#1e40af;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  height:100vh;
+}
+.card{
+  background:white;
+  padding:25px;
+  width:300px;
+  border-radius:10px;
+}
+input,button{
+  width:100%;
+  padding:10px;
+  margin-top:10px;
+}
+button{
+  background:#2563eb;
+  color:white;
+  border:none;
+}
+#msg{color:red;text-align:center}
 </style>
 </head>
 <body>
 
-<div class="box">
-  <h3>Giriş</h3>
-  <input id="username" placeholder="Kullanıcı Adı">
-  <input id="pin" type="password" placeholder="PIN">
+<div class="card">
+  <h3>Düzce Ulaşım</h3>
+  <input id="user" placeholder="Kullanıcı adı">
+  <input id="pin" placeholder="PIN" type="password">
   <button onclick="login()">Giriş Yap</button>
-  <p id="msg"></p>
+  <div id="msg"></div>
 </div>
+
+<script>
+if(!localStorage.getItem("users")){
+  localStorage.setItem("users", JSON.stringify([
+    {user:"amir", pin:"1234", role:"amir"},
+    {user:"sofor", pin:"1111", role:"sofor"}
+  ]));
+}
+
+if(!localStorage.getItem("seferler")){
+  localStorage.setItem("seferler","[]");
+}
+
+function login(){
+  const u=user.value.trim();
+  const p=pin.value.trim();
+  const users=JSON.parse(localStorage.getItem("users"));
+  const found=users.find(x=>x.user===u && x.pin===p);
+  if(!found){
+    msg.innerText="Hatalı giriş";
+    return;
+  }
+  localStorage.setItem("aktif",JSON.stringify(found));
+  location.href = found.role==="amir" ? "amir.html" : "sofor.html";
+}
+</script>
+
+</body>
+</html>
 
 <script src="app.js"></script>
 </body>
 </html>
+
 
