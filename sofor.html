@@ -3,22 +3,56 @@
 <head>
 <meta charset="UTF-8">
 <title>Şoför</title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script defer src="app.js"></script>
 <style>
 body{font-family:Arial;background:#f8fafc;padding:20px}
-.card{background:#fff;max-width:500px;margin:auto;padding:20px;border-radius:10px}
-button{padding:10px;margin-top:5px;width:100%}
+.card{background:white;padding:15px;margin-bottom:10px}
+button{margin-top:5px}
 </style>
 </head>
 <body>
 
-<div class="card">
-<h2>Seferlerim</h2>
-<div id="liste"></div>
-<button onclick="logout()" style="background:#f87171;color:white">Çıkış</button>
-</div>
+<h3>Şoför Paneli</h3>
+<div id="list"></div>
+<button onclick="cikis()">Çıkış</button>
+
+<script>
+const aktif=JSON.parse(localStorage.getItem("aktif"));
+let seferler=JSON.parse(localStorage.getItem("seferler"));
+const list=document.getElementById("list");
+
+function render(){
+  list.innerHTML="";
+  seferler.filter(x=>x.sofor===aktif.user).forEach((s,i)=>{
+    const d=document.createElement("div");
+    d.className="card";
+    d.innerHTML=`
+      <b>${s.hat}</b><br>
+      ${s.yon} | ${s.arac}<br>
+      Saat: ${s.saat}<br>
+      Durum: ${s.durum}<br>
+      <button onclick="yap(${i})">Yapıldı</button>
+    `;
+    list.appendChild(d);
+  });
+}
+
+function yap(i){
+  seferler[i].durum="Yapıldı";
+  localStorage.setItem("seferler",JSON.stringify(seferler));
+  render();
+}
+
+function cikis(){
+  localStorage.removeItem("aktif");
+  location.href="index.html";
+}
+
+render();
+</script>
 
 </body>
 </html>
+
+</body>
+</html>
+
