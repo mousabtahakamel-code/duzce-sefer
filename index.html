@@ -7,10 +7,11 @@
 body{
   font-family:Arial;
   background:#1e40af;
+  height:100vh;
+  margin:0;
   display:flex;
   justify-content:center;
   align-items:center;
-  height:100vh;
 }
 .card{
   background:white;
@@ -28,49 +29,65 @@ button{
   color:white;
   border:none;
 }
-#msg{color:red;text-align:center}
+#msg{
+  margin-top:10px;
+  text-align:center;
+  color:red;
+  min-height:20px;
+}
 </style>
 </head>
 <body>
 
 <div class="card">
   <h3>Düzce Ulaşım</h3>
+
   <input id="user" placeholder="Kullanıcı adı">
   <input id="pin" placeholder="PIN" type="password">
-  <button onclick="login()">Giriş Yap</button>
-  <div id="msg"></div>
+
+  <!-- ÖNEMLİ: type="button" -->
+  <button type="button" onclick="login()">Giriş Yap</button>
+
+  <div id="msg">Hazır</div>
 </div>
 
 <script>
-if(!localStorage.getItem("users")){
-  localStorage.setItem("users", JSON.stringify([
-    {user:"amir", pin:"1234", role:"amir"},
-    {user:"sofor", pin:"1111", role:"sofor"}
-  ]));
-}
-
-if(!localStorage.getItem("seferler")){
-  localStorage.setItem("seferler","[]");
-}
+console.log("JS ÇALIŞTI");
 
 function login(){
-  const u=user.value.trim();
-  const p=pin.value.trim();
-  const users=JSON.parse(localStorage.getItem("users"));
-  const found=users.find(x=>x.user===u && x.pin===p);
+  console.log("LOGIN TIKLANDI");
+
+  const u = document.getElementById("user").value.trim();
+  const p = document.getElementById("pin").value.trim();
+  const msg = document.getElementById("msg");
+
+  msg.innerText = "Kontrol ediliyor...";
+
+  // HER ZAMAN sıfırdan oluştur
+  const users = [
+    {user:"amir", pin:"1234", role:"amir"},
+    {user:"sofor", pin:"1111", role:"sofor"}
+  ];
+
+  console.log("Girilen:", u, p);
+
+  const found = users.find(x => x.user === u && x.pin === p);
+
   if(!found){
-    msg.innerText="Hatalı giriş";
+    msg.innerText = "❌ Kullanıcı adı veya PIN yanlış";
     return;
   }
-  localStorage.setItem("aktif",JSON.stringify(found));
-  location.href = found.role==="amir" ? "amir.html" : "sofor.html";
+
+  msg.innerText = "✅ Giriş başarılı";
+
+  if(found.role === "amir"){
+    window.location.href = "amir.html";
+  } else {
+    window.location.href = "sofor.html";
+  }
 }
 </script>
 
-</body>
-</html>
-
-<script src="app.js"></script>
 </body>
 </html>
 
