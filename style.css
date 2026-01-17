@@ -1,1 +1,17 @@
+<div class="tables">
 
+  <div>
+    <h4>Gidiş Seferleri</h4>
+    <table id="gTablo">
+      <tr><th>Hat</th><th>Saat</th><th>Şoför</th></tr>
+    </table>
+  </div>
+
+  <div>
+    <h4>Dönüş Seferleri</h4>
+    <table id="dTablo">
+      <tr><th>Hat</th><th>Saat</th><th>Şoför</th></tr>
+    </table>
+  </div>
+
+</div>
