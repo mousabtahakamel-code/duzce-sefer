@@ -5,34 +5,29 @@
 <title>Şoför</title>
 <style>
 body{font-family:Arial;background:#f8fafc;padding:20px}
-.card{background:white;padding:15px;margin-bottom:10px}
-button{margin-top:5px}
+.card{background:white;padding:10px;margin-bottom:10px}
 </style>
 </head>
 <body>
 
 <h3>Şoför Paneli</h3>
-<div id="list"></div>
+<div id="g"></div>
+<div id="d"></div>
 <button onclick="cikis()">Çıkış</button>
 
 <script>
 const aktif=JSON.parse(localStorage.getItem("aktif"));
 let seferler=JSON.parse(localStorage.getItem("seferler"));
-const list=document.getElementById("list");
 
 function render(){
-  list.innerHTML="";
+  g.innerHTML="<h4>Gidiş</h4>";
+  d.innerHTML="<h4>Dönüş</h4>";
   seferler.filter(x=>x.sofor===aktif.user).forEach((s,i)=>{
-    const d=document.createElement("div");
-    d.className="card";
-    d.innerHTML=`
-      <b>${s.hat}</b><br>
-      ${s.yon} | ${s.arac}<br>
-      Saat: ${s.saat}<br>
-      Durum: ${s.durum}<br>
+    const div=`<div class="card">
+      ${s.hat}<br>${s.arac}<br>${s.saat}<br>${s.durum}
       <button onclick="yap(${i})">Yapıldı</button>
-    `;
-    list.appendChild(d);
+    </div>`;
+    s.yon==="Gidiş"?g.innerHTML+=div:d.innerHTML+=div;
   });
 }
 
@@ -46,12 +41,8 @@ function cikis(){
   localStorage.removeItem("aktif");
   location.href="index.html";
 }
-
 render();
 </script>
-
-</body>
-</html>
 
 </body>
 </html>
