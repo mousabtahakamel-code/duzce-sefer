@@ -1,23 +1,112 @@
-.tabs{
-  display:flex;
-  gap:10px;
-  margin-top:15px;
+body{
+  font-family:Arial, Helvetica, sans-serif;
+  background:#eef;
+  padding:20px;
+  margin:0;
 }
-.tab-btn{
-  flex:1;
+
+/* Ana kutu */
+.box{
+  background:white;
+  padding:20px;
+  max-width:1000px;
+  margin:auto;
+  border-radius:8px;
+}
+
+/* Form elemanları */
+select,
+input,
+button{
+  width:100%;
   padding:10px;
-  border:none;
-  background:#ddd;
-  cursor:pointer;
-  font-weight:bold;
+  margin-top:10px;
+  box-sizing:border-box;
+  font-size:14px;
 }
-.tab-btn.active{
+
+/* Saat butonları */
+.time{
+  padding:6px;
+  margin:3px;
+  font-size:12px;
+  border:1px solid #ccc;
+  border-radius:4px;
+  cursor:pointer;
+  background:#f8fafc;
+}
+
+.time:hover{
+  background:#e5e7eb;
+}
+
+/* Seçili saat */
+.active{
+  background:#2563eb !important;
+  color:white;
+  border-color:#2563eb;
+}
+
+/* Kullanılmış saat */
+.used{
+  background:#9ca3af !important;
+  color:white;
+  cursor:not-allowed;
+  border-color:#9ca3af;
+}
+
+/* Saat içindeki şoför ismi */
+small{
+  display:block;
+  font-size:10px;
+  margin-top:2px;
+}
+
+/* Saatler alanı */
+#saatler{
+  display:flex;
+  flex-wrap:wrap;
+  margin-top:10px;
+}
+
+/* Gidiş / Dönüş tabloları YAN YANA */
+.flex{
+  display:flex;
+  gap:15px;
+  margin-top:20px;
+}
+
+/* Her tablo alanı */
+.flex > div{
+  width:50%;
+}
+
+/* Tablo */
+table{
+  width:100%;
+  border-collapse:collapse;
+  margin-top:10px;
+  font-size:13px;
+}
+
+th{
   background:#2563eb;
   color:white;
 }
-.tab-content{
-  display:none;
+
+td, th{
+  border:1px solid #d1d5db;
+  padding:6px;
+  text-align:center;
 }
-.tab-content.active{
-  display:block;
+
+/* Başlıklar */
+h3, h4{
+  margin-bottom:5px;
 }
+
+/* Ayırıcı */
+hr{
+  margin:20px 0;
+}
+
