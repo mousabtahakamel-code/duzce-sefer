@@ -5,12 +5,16 @@
 <title>Hareket Amiri</title>
 <style>
 body{font-family:Arial;background:#eef;padding:20px}
-.box{background:white;padding:20px;max-width:600px;margin:auto}
+.box{background:white;padding:20px;max-width:900px;margin:auto}
 select,input,button{width:100%;padding:10px;margin-top:10px}
-.time{padding:5px;margin:3px}
+.time{padding:5px;margin:3px;font-size:12px}
 .active{background:#2563eb;color:white}
+.used{background:#999;color:white;cursor:not-allowed}
 table{width:100%;margin-top:10px;border-collapse:collapse}
 td,th{border:1px solid #ccc;padding:5px;text-align:center}
+.flex{display:flex;gap:15px;margin-top:15px}
+.flex>div{width:50%}
+small{display:block;font-size:10px}
 </style>
 </head>
 <body>
@@ -18,14 +22,14 @@ td,th{border:1px solid #ccc;padding:5px;text-align:center}
 <div class="box">
 <h3>Hareket Amiri</h3>
 
-<select id="hat">
-  <option>1 - Üniversite Ring</option>
-  <option>30 - Bahçeşehir Ring</option>
-  <option>12 - Yeşiltepe - Otogar - Jandarma</option>
-  <option>25 - Sarayyeri - Otogar</option>
-  <option>26 - Akşemsettin - Otogar</option>
-  <option>46 - Mamure - Otogar</option>
-  <option>43 - Düzce Üniversitesi - Bahçeşehir</option>
+<select id="hat" onchange="hatKontrol()">
+  <option value="1">1 - Üniversite Ring</option>
+  <option value="30">30 - Bahçeşehir Ring</option>
+  <option value="12">12 - Yeşiltepe - Otogar - Jandarma</option>
+  <option value="25">25 - Sarayyeri - Otogar</option>
+  <option value="26">26 - Akşemsettin - Otogar</option>
+  <option value="46">46 - Mamure - Otogar</option>
+  <option value="43">43 - Düzce Üniversitesi - Bahçeşehir</option>
 </select>
 
 <select id="yon">
@@ -52,112 +56,109 @@ td,th{border:1px solid #ccc;padding:5px;text-align:center}
 
 <hr>
 
-<h4>Şoför Ekle</h4>
-<input id="su" placeholder="Kullanıcı adı">
-<input id="sp" placeholder="PIN">
-<button onclick="ekle()">Şoför Ekle</button>
-
-<hr>
-
-<h4>Gidiş Seferleri</h4>
+<div class="flex">
+<div>
+<h4>Gidiş</h4>
 <table id="gTablo">
-  <tr><th>Hat</th><th>Saat</th><th>Şoför</th></tr>
+<tr><th>Hat</th><th>Saat</th><th>Şoför</th></tr>
 </table>
+</div>
 
-<h4>Dönüş Seferleri</h4>
+<div>
+<h4>Dönüş</h4>
 <table id="dTablo">
-  <tr><th>Hat</th><th>Saat</th><th>Şoför</th></tr>
+<tr><th>Hat</th><th>Saat</th><th>Şoför</th></tr>
 </table>
+</div>
+</div>
 
-<button onclick="cikis()">Çıkış</button>
 </div>
 
 <script>
-let users = JSON.parse(localStorage.getItem("users")) || [];
-let seferler = JSON.parse(localStorage.getItem("seferler")) || [];
-let secilen = [];
+let users=JSON.parse(localStorage.getItem("users"))||[];
+let seferler=JSON.parse(localStorage.getItem("seferler"))||[];
+let secilen=[];
 
-/* Şoförleri yükle */
 function yukleSofor(){
   sofor.innerHTML="";
   users.filter(x=>x.role==="sofor").forEach(s=>{
-    sofor.innerHTML += `<option value="${s.user}">${s.user}</option>`;
+    sofor.innerHTML+=`<option>${s.user}</option>`;
   });
 }
 yukleSofor();
 
-/* Saat butonları */
-for(let h=5;h<24;h++){
-  for(let m=0;m<60;m+=5){
-    const s=`${String(h).padStart(2,"0")}:${String(m).padStart(2,"0")}`;
-    const b=document.createElement("button");
-    b.innerText=s;
-    b.className="time";
-    b.onclick=()=>{
-      b.classList.toggle("active");
-      secilen.includes(s)
-        ? secilen = secilen.filter(x=>x!==s)
-        : secilen.push(s);
-    };
-    saatler.appendChild(b);
+/* Ring hat kontrol */
+function hatKontrol(){
+  if(hat.value==="1" || hat.value==="30"){
+    yon.value="gidis";
+    yon.disabled=true;
+  }else{
+    yon.disabled=false;
+  }
+  saatleriYukle();
+}
+
+/* Saatleri oluştur */
+function saatleriYukle(){
+  saatler.innerHTML="";
+  for(let h=5;h<24;h++){
+    for(let m=0;m<60;m+=5){
+      const s=`${String(h).padStart(2,"0")}:${String(m).padStart(2,"0")}`;
+      const kullanilan=seferler.find(x=>x.saat===s);
+      const b=document.createElement("button");
+      b.className="time";
+
+      if(kullanilan){
+        b.classList.add("used");
+        b.innerHTML=s+`<small>${kullanilan.sofor}</small>`;
+        b.disabled=true;
+      }else{
+        b.innerText=s;
+        b.onclick=()=>{
+          b.classList.toggle("active");
+          secilen.includes(s)?secilen=secilen.filter(x=>x!==s):secilen.push(s);
+        };
+      }
+      saatler.appendChild(b);
+    }
   }
 }
+saatleriYukle();
 
 /* Sefer ata */
 function ata(){
+  if(secilen.length===0) return alert("Saat seçmedin");
+
   secilen.forEach(s=>{
     seferler.push({
-      hat: hat.value,
-      yon: yon.value,   // gidis / donus
-      arac: arac.value,
-      sofor: sofor.value,
-      saat: s,
-      durum: "Bekliyor"
+      hat:hat.value,
+      yon:yon.value,
+      arac:arac.value,
+      sofor:sofor.value,
+      saat:s
     });
   });
-  localStorage.setItem("seferler", JSON.stringify(seferler));
+
+  localStorage.setItem("seferler",JSON.stringify(seferler));
   secilen=[];
-  document.querySelectorAll(".active").forEach(x=>x.classList.remove("active"));
+  saatleriYukle();
   listele();
 }
 
-/* Şoför ekle */
-function ekle(){
-  users.push({user:su.value,pin:sp.value,role:"sofor"});
-  localStorage.setItem("users",JSON.stringify(users));
-  yukleSofor();
-  su.value=""; sp.value="";
-}
-
-/* Gidiş / Dönüş ayrı tablo */
+/* Listele */
 function listele(){
   gTablo.innerHTML="<tr><th>Hat</th><th>Saat</th><th>Şoför</th></tr>";
   dTablo.innerHTML="<tr><th>Hat</th><th>Saat</th><th>Şoför</th></tr>";
 
   seferler.forEach(s=>{
-    const row = `<tr>
-      <td>${s.hat}</td>
-      <td>${s.saat}</td>
-      <td>${s.sofor}</td>
-    </tr>`;
-
-    if(s.yon === "gidis"){
-      gTablo.innerHTML += row;
-    }
-    if(s.yon === "donus"){
-      dTablo.innerHTML += row;
-    }
+    const r=`<tr><td>${s.hat}</td><td>${s.saat}</td><td>${s.sofor}</td></tr>`;
+    s.yon==="gidis"?gTablo.innerHTML+=r:dTablo.innerHTML+=r;
   });
 }
 listele();
-
-/* Çıkış */
-function cikis(){
-  localStorage.removeItem("aktif");
-  location.href="index.html";
-}
 </script>
 
 </body>
 </html>
+
 
