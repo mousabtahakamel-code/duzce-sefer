@@ -8,15 +8,14 @@ body{
   font-family:Arial;
   background:#1e40af;
   height:100vh;
-  margin:0;
   display:flex;
-  justify-content:center;
   align-items:center;
+  justify-content:center;
 }
 .card{
   background:white;
   padding:25px;
-  width:300px;
+  width:320px;
   border-radius:10px;
 }
 input,button{
@@ -29,66 +28,106 @@ button{
   color:white;
   border:none;
 }
-#msg{
+.link{
   margin-top:10px;
   text-align:center;
+  color:#2563eb;
+  cursor:pointer;
+}
+#msg{
+  text-align:center;
+  margin-top:10px;
   color:red;
-  min-height:20px;
 }
 </style>
 </head>
 <body>
 
-<div class="card">
-  <h3>Düzce Ulaşım</h3>
-
-  <input id="user" placeholder="Kullanıcı adı">
-  <input id="pin" placeholder="PIN" type="password">
-
-  <!-- ÖNEMLİ: type="button" -->
+<div class="card" id="loginBox">
+  <h3>Giriş</h3>
+  <input id="l_user" placeholder="Kullanıcı adı">
+  <input id="l_pin" type="password" placeholder="PIN">
   <button type="button" onclick="login()">Giriş Yap</button>
+  <div class="link" onclick="showSignup()">Şoför kayıt ol</div>
+  <div id="msg"></div>
+</div>
 
-  <div id="msg">Hazır</div>
+<div class="card" id="signupBox" style="display:none">
+  <h3>Şoför Kayıt</h3>
+  <input id="s_user" placeholder="Kullanıcı adı">
+  <input id="s_pin" type="password" placeholder="PIN">
+  <button type="button" onclick="signup()">Kayıt Ol</button>
+  <div class="link" onclick="showLogin()">Girişe dön</div>
+  <div id="smsg"></div>
 </div>
 
 <script>
-console.log("JS ÇALIŞTI");
-
-function login(){
-  console.log("LOGIN TIKLANDI");
-
-  const u = document.getElementById("user").value.trim();
-  const p = document.getElementById("pin").value.trim();
-  const msg = document.getElementById("msg");
-
-  msg.innerText = "Kontrol ediliyor...";
-
-  // HER ZAMAN sıfırdan oluştur
-  const users = [
+// ilk kurulum
+if(!localStorage.getItem("users")){
+  localStorage.setItem("users", JSON.stringify([
     {user:"amir", pin:"1234", role:"amir"},
     {user:"sofor", pin:"1111", role:"sofor"}
-  ];
+  ]));
+}
+if(!localStorage.getItem("seferler")){
+  localStorage.setItem("seferler","[]");
+}
 
-  console.log("Girilen:", u, p);
+// ekran geçişleri
+function showSignup(){
+  loginBox.style.display="none";
+  signupBox.style.display="block";
+}
+function showLogin(){
+  signupBox.style.display="none";
+  loginBox.style.display="block";
+}
 
-  const found = users.find(x => x.user === u && x.pin === p);
+// LOGIN
+function login(){
+  const u=l_user.value.trim();
+  const p=l_pin.value.trim();
+  const users=JSON.parse(localStorage.getItem("users"));
+  const found=users.find(x=>x.user===u && x.pin===p);
 
   if(!found){
-    msg.innerText = "❌ Kullanıcı adı veya PIN yanlış";
+    msg.innerText="❌ Hatalı giriş";
+    return;
+  }
+  localStorage.setItem("aktif",JSON.stringify(found));
+  location.href = found.role==="amir" ? "amir.html" : "sofor.html";
+}
+
+// SIGN UP (SADECE ŞOFÖR)
+function signup(){
+  const u=s_user.value.trim();
+  const p=s_pin.value.trim();
+  const smsg=document.getElementById("smsg");
+
+  if(!u || !p){
+    smsg.innerText="❌ Boş alan var";
     return;
   }
 
-  msg.innerText = "✅ Giriş başarılı";
-
-  if(found.role === "amir"){
-    window.location.href = "amir.html";
-  } else {
-    window.location.href = "sofor.html";
+  let users=JSON.parse(localStorage.getItem("users"));
+  if(users.find(x=>x.user===u)){
+    smsg.innerText="❌ Kullanıcı adı alınmış";
+    return;
   }
+
+  users.push({user:u,pin:p,role:"sofor"});
+  localStorage.setItem("users",JSON.stringify(users));
+  smsg.style.color="green";
+  smsg.innerText="✅ Kayıt başarılı, giriş yapabilirsin";
+
+  s_user.value="";
+  s_pin.value="";
 }
 </script>
 
 </body>
 </html>
+
+
 
 
