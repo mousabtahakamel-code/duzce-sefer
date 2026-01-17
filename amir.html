@@ -29,8 +29,8 @@ td,th{border:1px solid #ccc;padding:5px;text-align:center}
 </select>
 
 <select id="yon">
-  <option>Gidiş</option>
-  <option>Dönüş</option>
+  <option value="gidis">Gidiş</option>
+  <option value="donus">Dönüş</option>
 </select>
 
 <select id="arac">
@@ -60,57 +60,68 @@ td,th{border:1px solid #ccc;padding:5px;text-align:center}
 <hr>
 
 <h4>Gidiş Seferleri</h4>
-<table id="gTablo"></table>
+<table id="gTablo">
+  <tr><th>Hat</th><th>Saat</th><th>Şoför</th></tr>
+</table>
 
 <h4>Dönüş Seferleri</h4>
-<table id="dTablo"></table>
+<table id="dTablo">
+  <tr><th>Hat</th><th>Saat</th><th>Şoför</th></tr>
+</table>
 
 <button onclick="cikis()">Çıkış</button>
 </div>
 
 <script>
-let users=JSON.parse(localStorage.getItem("users"));
-let seferler=JSON.parse(localStorage.getItem("seferler"));
-let secilen=[];
+let users = JSON.parse(localStorage.getItem("users")) || [];
+let seferler = JSON.parse(localStorage.getItem("seferler")) || [];
+let secilen = [];
 
+/* Şoförleri yükle */
 function yukleSofor(){
   sofor.innerHTML="";
   users.filter(x=>x.role==="sofor").forEach(s=>{
-    sofor.innerHTML+=`<option value="${s.user}">${s.user}</option>`;
+    sofor.innerHTML += `<option value="${s.user}">${s.user}</option>`;
   });
 }
 yukleSofor();
 
+/* Saat butonları */
 for(let h=5;h<24;h++){
   for(let m=0;m<60;m+=5){
     const s=`${String(h).padStart(2,"0")}:${String(m).padStart(2,"0")}`;
     const b=document.createElement("button");
-    b.innerText=s; b.className="time";
+    b.innerText=s;
+    b.className="time";
     b.onclick=()=>{
       b.classList.toggle("active");
-      secilen.includes(s)?secilen=secilen.filter(x=>x!==s):secilen.push(s);
+      secilen.includes(s)
+        ? secilen = secilen.filter(x=>x!==s)
+        : secilen.push(s);
     };
     saatler.appendChild(b);
   }
 }
 
+/* Sefer ata */
 function ata(){
   secilen.forEach(s=>{
     seferler.push({
-      hat:hat.value,
-      yon:yon.value,
-      arac:arac.value,
-      sofor:sofor.value,
-      saat:s,
-      durum:"Bekliyor"
+      hat: hat.value,
+      yon: yon.value,   // gidis / donus
+      arac: arac.value,
+      sofor: sofor.value,
+      saat: s,
+      durum: "Bekliyor"
     });
   });
-  localStorage.setItem("seferler",JSON.stringify(seferler));
+  localStorage.setItem("seferler", JSON.stringify(seferler));
   secilen=[];
   document.querySelectorAll(".active").forEach(x=>x.classList.remove("active"));
   listele();
 }
 
+/* Şoför ekle */
 function ekle(){
   users.push({user:su.value,pin:sp.value,role:"sofor"});
   localStorage.setItem("users",JSON.stringify(users));
@@ -118,16 +129,29 @@ function ekle(){
   su.value=""; sp.value="";
 }
 
+/* Gidiş / Dönüş ayrı tablo */
 function listele(){
   gTablo.innerHTML="<tr><th>Hat</th><th>Saat</th><th>Şoför</th></tr>";
   dTablo.innerHTML="<tr><th>Hat</th><th>Saat</th><th>Şoför</th></tr>";
+
   seferler.forEach(s=>{
-    const row=`<tr><td>${s.hat}</td><td>${s.saat}</td><td>${s.sofor}</td></tr>`;
-    s.yon==="Gidiş"?gTablo.innerHTML+=row:dTablo.innerHTML+=row;
+    const row = `<tr>
+      <td>${s.hat}</td>
+      <td>${s.saat}</td>
+      <td>${s.sofor}</td>
+    </tr>`;
+
+    if(s.yon === "gidis"){
+      gTablo.innerHTML += row;
+    }
+    if(s.yon === "donus"){
+      dTablo.innerHTML += row;
+    }
   });
 }
 listele();
 
+/* Çıkış */
 function cikis(){
   localStorage.removeItem("aktif");
   location.href="index.html";
