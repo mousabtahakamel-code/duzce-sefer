@@ -20,6 +20,11 @@ small{display:block;font-size:10px}
 .tabbtn.active{background:#2563eb;color:#fff}
 .tabcontent{display:none}
 .tabcontent.active{display:block}
+
+.reset{
+  background:#dc2626;
+  color:white;
+}
 </style>
 </head>
 <body>
@@ -58,6 +63,7 @@ small{display:block;font-size:10px}
 <div id="saatler"></div>
 
 <button onclick="ata()">Sefer Ata</button>
+<button class="reset" onclick="resetSeferler()">Tüm Seferleri Sıfırla</button>
 
 <!-- TAB BUTTONS -->
 <div class="tabs">
@@ -102,7 +108,7 @@ function tabAc(id){
   event.target.classList.add("active");
 }
 
-/* Ring hat kontrol */
+/* Ring hat */
 function hatKontrol(){
   if(hat.value==="1" || hat.value==="30"){
     yon.value="gidis";
@@ -134,14 +140,15 @@ function saatleriYukle(){
         b.innerText=s;
         b.onclick=()=>{
           b.classList.toggle("active");
-          secilen.includes(s)?secilen=secilen.filter(x=>x!==s):secilen.push(s);
+          secilen.includes(s)
+            ? secilen=secilen.filter(x=>x!==s)
+            : secilen.push(s);
         };
       }
       saatler.appendChild(b);
     }
   }
 }
-saatleriYukle();
 
 /* Ata */
 function ata(){
@@ -149,16 +156,27 @@ function ata(){
 
   secilen.forEach(s=>{
     seferler.push({
+      id: crypto.randomUUID(),
       hat:hat.value,
       yon:yon.value,
       arac:arac.value,
       sofor:sofor.value,
-      saat:s
+      saat:s,
+      durum:"Bekliyor"
     });
   });
 
   localStorage.setItem("seferler",JSON.stringify(seferler));
   secilen=[];
+  saatleriYukle();
+  listele();
+}
+
+/* RESET */
+function resetSeferler(){
+  if(!confirm("TÜM SEFERLER SİLİNECEK. Emin misin?")) return;
+  seferler=[];
+  localStorage.removeItem("seferler");
   saatleriYukle();
   listele();
 }
@@ -170,12 +188,17 @@ function listele(){
 
   seferler.forEach(s=>{
     const r=`<tr><td>${s.hat}</td><td>${s.saat}</td><td>${s.sofor}</td></tr>`;
-    s.yon==="gidis"?gTablo.innerHTML+=r:dTablo.innerHTML+=r;
+    s.yon==="gidis"
+      ? gTablo.innerHTML+=r
+      : dTablo.innerHTML+=r;
   });
 }
+
+saatleriYukle();
 listele();
 </script>
 
 </body>
 </html>
+
 
