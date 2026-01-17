@@ -3,28 +3,30 @@
 <head>
 <meta charset="UTF-8">
 <title>Hareket Amiri</title>
+
 <style>
 body{font-family:Arial;background:#eef;padding:20px}
-.box{background:white;padding:20px;max-width:900px;margin:auto}
-select,input,button{width:100%;padding:10px;margin-top:10px}
+.box{background:white;padding:20px;max-width:1200px;margin:auto}
+
+select,button{width:100%;padding:10px;margin-top:10px}
+
 .time{padding:5px;margin:3px;font-size:12px}
 .active{background:#2563eb;color:white}
 .used{background:#999;color:white;cursor:not-allowed}
-table{width:100%;margin-top:10px;border-collapse:collapse}
-td,th{border:1px solid #ccc;padding:5px;text-align:center}
+
 small{display:block;font-size:10px}
 
-/* TAB */
-.tabs{display:flex;gap:10px;margin-top:20px}
-.tabbtn{flex:1;padding:10px;border:none;background:#ddd;cursor:pointer}
-.tabbtn.active{background:#2563eb;color:#fff}
-.tabcontent{display:none}
-.tabcontent.active{display:block}
-
-.reset{
-  background:#dc2626;
-  color:white;
+.tables{
+  display:flex;
+  gap:20px;
+  margin-top:30px;
 }
+.tableBox{width:50%}
+
+table{width:100%;border-collapse:collapse}
+td,th{border:1px solid #ccc;padding:5px;text-align:center}
+
+.reset{background:#dc2626;color:white}
 </style>
 </head>
 <body>
@@ -65,24 +67,20 @@ small{display:block;font-size:10px}
 <button onclick="ata()">Sefer Ata</button>
 <button class="reset" onclick="resetSeferler()">Tüm Seferleri Sıfırla</button>
 
-<!-- TAB BUTTONS -->
-<div class="tabs">
-  <button class="tabbtn active" onclick="tabAc('gidisTab')">Gidiş</button>
-  <button class="tabbtn" id="donusBtn" onclick="tabAc('donusTab')">Dönüş</button>
-</div>
+<div class="tables">
+  <div class="tableBox">
+    <h4>Gidiş Seferleri</h4>
+    <table id="gTablo">
+      <tr><th>Hat</th><th>Saat</th><th>Şoför</th></tr>
+    </table>
+  </div>
 
-<!-- GİDİŞ -->
-<div id="gidisTab" class="tabcontent active">
-  <table id="gTablo">
-    <tr><th>Hat</th><th>Saat</th><th>Şoför</th></tr>
-  </table>
-</div>
-
-<!-- DÖNÜŞ -->
-<div id="donusTab" class="tabcontent">
-  <table id="dTablo">
-    <tr><th>Hat</th><th>Saat</th><th>Şoför</th></tr>
-  </table>
+  <div class="tableBox">
+    <h4>Dönüş Seferleri</h4>
+    <table id="dTablo">
+      <tr><th>Hat</th><th>Saat</th><th>Şoför</th></tr>
+    </table>
+  </div>
 </div>
 
 </div>
@@ -92,6 +90,8 @@ let users=JSON.parse(localStorage.getItem("users"))||[];
 let seferler=JSON.parse(localStorage.getItem("seferler"))||[];
 let secilen=[];
 
+const saatler=document.getElementById("saatler");
+
 function yukleSofor(){
   sofor.innerHTML="";
   users.filter(x=>x.role==="sofor").forEach(s=>{
@@ -100,35 +100,30 @@ function yukleSofor(){
 }
 yukleSofor();
 
-/* TAB */
-function tabAc(id){
-  document.querySelectorAll(".tabcontent").forEach(x=>x.classList.remove("active"));
-  document.querySelectorAll(".tabbtn").forEach(x=>x.classList.remove("active"));
-  document.getElementById(id).classList.add("active");
-  event.target.classList.add("active");
-}
-
-/* Ring hat */
+/* 1 ve 30 sadece gidiş */
 function hatKontrol(){
   if(hat.value==="1" || hat.value==="30"){
     yon.value="gidis";
     yon.disabled=true;
-    document.getElementById("donusBtn").style.display="none";
-    tabAc('gidisTab');
   }else{
     yon.disabled=false;
-    document.getElementById("donusBtn").style.display="block";
   }
   saatleriYukle();
 }
 
-/* Saatler */
+/* Saatler – HAT + YÖN kilidi */
 function saatleriYukle(){
   saatler.innerHTML="";
   for(let h=5;h<24;h++){
     for(let m=0;m<60;m+=5){
       const s=`${String(h).padStart(2,"0")}:${String(m).padStart(2,"0")}`;
-      const kullanilan=seferler.find(x=>x.saat===s);
+
+      const kullanilan = seferler.find(x =>
+        x.saat===s &&
+        x.hat===hat.value &&
+        x.yon===yon.value
+      );
+
       const b=document.createElement("button");
       b.className="time";
 
@@ -137,7 +132,7 @@ function saatleriYukle(){
         b.innerHTML=s+`<small>${kullanilan.sofor}</small>`;
         b.disabled=true;
       }else{
-        b.innerText=s;
+        b.textContent=s;
         b.onclick=()=>{
           b.classList.toggle("active");
           secilen.includes(s)
@@ -156,7 +151,7 @@ function ata(){
 
   secilen.forEach(s=>{
     seferler.push({
-      id: crypto.randomUUID(),
+      id:crypto.randomUUID(),
       hat:hat.value,
       yon:yon.value,
       arac:arac.value,
@@ -172,7 +167,7 @@ function ata(){
   listele();
 }
 
-/* RESET */
+/* Reset */
 function resetSeferler(){
   if(!confirm("TÜM SEFERLER SİLİNECEK. Emin misin?")) return;
   seferler=[];
@@ -194,11 +189,12 @@ function listele(){
   });
 }
 
-saatleriYukle();
+hatKontrol();
 listele();
 </script>
 
 </body>
 </html>
+
 
 
