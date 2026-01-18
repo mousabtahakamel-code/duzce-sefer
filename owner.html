@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Owner Paneli - Düzce Ulaşım</title>
+<style>
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: #f5f5f5;
+}
+
+.header {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 20px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.header-content {
+  max-width: 1200px;
+  margin: auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.header h1 {
+  font-size: 24px;
+}
+
+.header small {
+  display: block;
+  opacity: 0.9;
+  margin-top: 5px;
+}
+
+.logout-btn {
+  background: rgba(255,255,255,0.2);
+  color: white;
+  border: 2px solid white;
+  padding: 10px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.3s;
+}
+
+.logout-btn:hover {
+  background: white;
+  color: #667eea;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 30px auto;
+  padding: 0 20px;
+}
+
+.tabs {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 30px;
+  flex-wrap: wrap;
+}
+
+.tab {
+  padding: 12px 24px;
+  background: white;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.3s;
+}
+
+.tab.active {
+  background: #667eea;
+  color: white;
+  border-color: #667eea;
+}
+
+.tab:hover {
+  border-color: #667eea;
+}
+
+.tab-content {
+  display: none;
+}
+
+.tab-content.active {
+  display: block;
+}
+
+.card {
+  background: white;
+  padding: 25px;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  margin-bottom: 20px;
+}
+
+.card h3 {
+  margin-bottom: 20px;
+  color: #333;
+  padding-bottom: 10px;
+  border-bottom: 2px solid #667eea;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 15px;
+  margin-bottom: 15px;
+}
+
+.form-group {
+  margin-bottom: 15px;
+}
+
+label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: 600;
+  color: #555;
+  font-size: 14px;
+}
+
+input, select {
+  width: 100%;
+  padding: 10px;
+  border: 2px solid #e0e0e0;
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+input:focus, select:focus {
+  outline: none;
+  border-color: #667eea;
+}
+
+.btn {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 14px;
+  transition: all 0.3s;
+}
+
+.btn-primary {
+  background: #667eea;
+  color: white;
+}
+
+.btn-primary:hover {
+  background: #5568d3;
+}
+
+.btn-danger {
+  background: #dc2626;
+  color: white;
+}
+
+.btn-danger:hover {
+  background: #b91c1c;
+}
+
+.btn-warning {
+  background: #f59e0b;
+  color: white;
+}
+
+.btn-warning:hover {
+  background: #d97706;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 15px;
+}
+
+th, td {
+  padding: 12px;
+  text-align: left;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+th {
+  background: #f9fafb;
+  font-weight: 600;
+  color: #555;
+}
+
+tr:hover {
+  background: #f9fafb;
+}
+
+.badge {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.badge-owner {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.badge-amir {
+  background: #dbeafe;
+  color: #1e40af;
+}
+
+.badge-sofor {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.action-btn {
+  padding: 6px 12px;
+  margin: 0 3px;
+  font-size: 12px;
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-content">
+    <div>
+      <h1>🏢 Owner Paneli</h1>
+      <small id="userName"></small>
+    </div>
+    <button class="logout-btn" onclick="cikisYap()">🚪 Çıkış</button>
+  </div>
+</div>
+
+<div class="container">
+  <div class="tabs">
+    <div class="tab active" onclick="tabDegistir('kullanicilar')">👥 Kullanıcı Yönetimi</div>
+    <div class="tab" onclick="tabDegistir('seferler')">🚌 Sefer Yönetimi</div>
+  </div>
+
+  <!-- Kullanıcı Yönetimi -->
+  <div id="kullanicilar" class="tab-content active">
+    <div class="card">
+      <h3>➕ Yeni Kullanıcı Ekle</h3>
+      <form onsubmit="kullaniciEkle(event)">
+        <div class="form-row">
+          <div class="form-group">
+            <label>👤 Kullanıcı Adı</label>
+            <input type="text" id="yeniUser" required>
+          </div>
+          <div class="form-group">
+            <label>👨 Ad Soyad</label>
+            <input type="text" id="yeniAd" required>
+          </div>
+          <div class="form-group">
+            <label>🔒 Şifre</label>
+            <input type="password" id="yeniPass" required>
+          </div>
+          <div class="form-group">
+            <label>🎭 Rol</label>
+            <select id="yeniRole" required>
+              <option value="sofor">Şoför</option>
+              <option value="amir">Hareket Amiri</option>
+              <option value="owner">Owner</option>
+            </select>
+          </div>
+        </div>
+        <button type="submit" class="btn btn-primary">Kullanıcı Ekle</button>
+      </form>
+    </div>
+
+    <div class="card">
+      <h3>📋 Kullanıcı Listesi</h3>
+      <table id="kullaniciTablosu">
+        <thead>
+          <tr>
+            <th>Kullanıcı Adı</th>
+            <th>Ad Soyad</th>
+            <th>Rol</th>
+            <th>İşlemler</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Sefer Yönetimi -->
+  <div id="seferler" class="tab-content">
+    <div class="card">
+      <h3>🚌 Tüm Seferler</h3>
+      <button class="btn btn-danger" onclick="tumSeferleriSil()">🗑️ Tüm Seferleri Sil</button>
+      <table id="seferTablosu" style="margin-top:20px">
+        <thead>
+          <tr>
+            <th>Hat</th>
+            <th>Yön</th>
+            <th>Saat</th>
+            <th>Şoför</th>
+            <th>Araç</th>
+            <th>Durum</th>
+            <th>İşlem</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<script>
+// Giriş kontrolü
+let currentUser = JSON.parse(localStorage.getItem("currentUser"));
+if (!currentUser || currentUser.role !== "owner") {
+  alert("❌ Bu sayfaya erişim yetkiniz yok!");
+  window.location.href = "index.html";
+} else {
+  document.getElementById("userName").textContent = currentUser.ad || currentUser.user;
+}
+
+const hatlar = {
+  "1": "Üniversite Ring",
+  "30": "Bahçeşehir Ring",
+  "12": "Yeşiltepe - Otogar - Jandarma",
+  "25": "Sarayyeri - Otogar",
+  "26": "Akşemsettin - Otogar",
+  "46": "Mamure - Otogar",
+  "43": "Düzce Üniversitesi - Bahçeşehir"
+};
+
+function tabDegistir(tab) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+  
+  event.target.classList.add('active');
+  document.getElementById(tab).classList.add('active');
+  
+  if (tab === 'seferler') seferleriListele();
+}
+
+function kullaniciEkle(e) {
+  e.preventDefault();
+  
+  const users = JSON.parse(localStorage.getItem("users")) || [];
+  const yeniKullanici = {
+    user: document.getElementById("yeniUser").value.trim(),
+    ad: document.getElementById("yeniAd").value.trim(),
+    pass: document.getElementById("yeniPass").value,
+    role: document.getElementById("yeniRole").value
+  };
+  
+  if (users.find(u => u.user === yeniKullanici.user)) {
+    alert("❌ Bu kullanıcı adı zaten kullanılıyor!");
+    return;
+  }
+  
+  users.push(yeniKullanici);
+  localStorage.setItem("users", JSON.stringify(users));
+  
+  alert("✅ Kullanıcı başarıyla eklendi!");
+  e.target.reset();
+  kullanicilariListele();
+}
+
+function kullanicilariListele() {
+  const users = JSON.parse(localStorage.getItem("users")) || [];
+  const tbody = document.querySelector("#kullaniciTablosu tbody");
+  tbody.innerHTML = "";
+  
+  users.forEach(u => {
+    const badgeClass = `badge-${u.role}`;
+    const rolTr = u.role === 'owner' ? 'Owner' : u.role === 'amir' ? 'Hareket Amiri' : 'Şoför';
+    
+    tbody.innerHTML += `
+      <tr>
+        <td><strong>${u.user}</strong></td>
+        <td>${u.ad}</td>
+        <td><span class="badge ${badgeClass}">${rolTr}</span></td>
+        <td>
+          <button class="btn btn-warning action-btn" onclick='sifreDegistir("${u.user}")'>🔑 Şifre Değiştir</button>
+          <button class="btn btn-danger action-btn" onclick='kullaniciSil("${u.user}")'>🗑️ Sil</button>
+        </td>
+      </tr>
+    `;
+  });
+}
+
+function sifreDegistir(username) {
+  const yeniSifre = prompt(`${username} için yeni şifre:`);
+  if (!yeniSifre) return;
+  
+  const users = JSON.parse(localStorage.getItem("users")) || [];
+  const user = users.find(u => u.user === username);
+  if (user) {
+    user.pass = yeniSifre;
+    localStorage.setItem("users", JSON.stringify(users));
+    alert("✅ Şifre değiştirildi!");
+  }
+}
+
+function kullaniciSil(username) {
+  if (!confirm(`${username} kullanıcısını silmek istediğinize emin misiniz?`)) return;
+  
+  let users = JSON.parse(localStorage.getItem("users")) || [];
+  users = users.filter(u => u.user !== username);
+  localStorage.setItem("users", JSON.stringify(users));
+  
+  alert("✅ Kullanıcı silindi!");
+  kullanicilariListele();
+}
+
+function seferleriListele() {
+  const seferler = JSON.parse(localStorage.getItem("seferler")) || [];
+  const tbody = document.querySelector("#seferTablosu tbody");
+  tbody.innerHTML = "";
+  
+  if (seferler.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; color:#999;">Henüz sefer yok</td></tr>';
+    return;
+  }
+  
+  seferler.forEach(s => {
+    const hatAdi = hatlar[s.hat] || s.hat;
+    const yonText = s.yon === 'gidis' ? '➡️ Gidiş' : '⬅️ Dönüş';
+    const durumBadge = s.durum === 'Tamamlandı' 
+      ? '<span class="badge" style="background:#d1fae5;color:#065f46">✅ Tamamlandı</span>'
+      : '<span class="badge" style="background:#fef3c7;color:#92400e">⏳ Bekliyor</span>';
+    
+    tbody.innerHTML += `
+      <tr>
+        <td>${hatAdi}</td>
+        <td>${yonText}</td>
+        <td><strong>${s.saat}</strong></td>
+        <td>${s.sofor}</td>
+        <td>${s.arac}</td>
+        <td>${durumBadge}</td>
+        <td>
+          <button class="btn btn-danger action-btn" onclick='seferSil("${s.id}")'>🗑️ Sil</button>
+        </td>
+      </tr>
+    `;
+  });
+}
+
+function seferSil(id) {
+  if (!confirm("Bu seferi silmek istediğinize emin misiniz?")) return;
+  
+  let seferler = JSON.parse(localStorage.getItem("seferler")) || [];
+  seferler = seferler.filter(s => s.id !== id);
+  localStorage.setItem("seferler", JSON.stringify(seferler));
+  
+  alert("✅ Sefer silindi!");
+  seferleriListele();
+}
+
+function tumSeferleriSil() {
+  if (!confirm("⚠️ TÜM SEFERLER SİLİNECEK! Emin misiniz?")) return;
+  
+  localStorage.removeItem("seferler");
+  alert("✅ Tüm seferler silindi!");
+  seferleriListele();
+}
+
+function cikisYap() {
+  localStorage.removeItem("currentUser");
+  window.location.href = "index.html";
+}
+
+kullanicilariListele();
+</script>
+
+</body>
+</html>

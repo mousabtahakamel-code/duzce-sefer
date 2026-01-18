@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hareket Amiri - Düzce Ulaşım</title>
+<style>
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: #f5f5f5;
+}
+
+.header {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 20px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.header-content {
+  max-width: 1400px;
+  margin: auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.header h1 {
+  font-size: 24px;
+}
+
+.header small {
+  display: block;
+  opacity: 0.9;
+  margin-top: 5px;
+}
+
+.logout-btn {
+  background: rgba(255,255,255,0.2);
+  color: white;
+  border: 2px solid white;
+  padding: 10px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.3s;
+}
+
+.logout-btn:hover {
+  background: white;
+  color: #667eea;
+}
+
+.container {
+  max-width: 1400px;
+  margin: 30px auto;
+  padding: 0 20px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 400px 1fr;
+  gap: 20px;
+}
+
+.card {
+  background: white;
+  padding: 25px;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.card h3 {
+  margin-bottom: 20px;
+  color: #333;
+  padding-bottom: 10px;
+  border-bottom: 2px solid #667eea;
+}
+
+.form-group {
+  margin-bottom: 15px;
+}
+
+label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: 600;
+  color: #555;
+  font-size: 14px;
+}
+
+select {
+  width: 100%;
+  padding: 10px;
+  border: 2px solid #e0e0e0;
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+select:focus {
+  outline: none;
+  border-color: #667eea;
+}
+
+.saatler {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  margin-top: 15px;
+  max-height: 400px;
+  overflow-y: auto;
+  padding: 10px;
+  background: #f9fafb;
+  border-radius: 8px;
+}
+
+.saat-btn {
+  padding: 10px;
+  border: 2px solid #e0e0e0;
+  background: white;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 13px;
+  transition: all 0.2s;
+}
+
+.saat-btn:hover {
+  border-color: #667eea;
+}
+
+.saat-btn.active {
+  background: #667eea;
+  color: white;
+  border-color: #667eea;
+}
+
+.saat-btn.used {
+  background: #e5e7eb;
+  color: #9ca3af;
+  cursor: not-allowed;
+  border-color: #e5e7eb;
+}
+
+.saat-btn.used small {
+  display: block;
+  font-size: 10px;
+  margin-top: 3px;
+}
+
+.btn {
+  width: 100%;
+  padding: 12px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 14px;
+  margin-top: 10px;
+  transition: all 0.3s;
+}
+
+.btn-primary {
+  background: #667eea;
+  color: white;
+}
+
+.btn-primary:hover {
+  background: #5568d3;
+}
+
+.btn-danger {
+  background: #dc2626;
+  color: white;
+}
+
+.btn-danger:hover {
+  background: #b91c1c;
+}
+
+.tables {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+}
+
+th, td {
+  padding: 10px;
+  text-align: center;
+  border: 1px solid #e0e0e0;
+  font-size: 13px;
+}
+
+th {
+  background: #667eea;
+  color: white;
+  font-weight: 600;
+}
+
+tr:hover {
+  background: #f9fafb;
+}
+
+.badge {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.badge-bekliyor {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.badge-tamamlandi {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+@media (max-width: 1200px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .tables {
+    grid-template-columns: 1fr;
+  }
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-content">
+    <div>
+      <h1>📋 Hareket Amiri Paneli</h1>
+      <small id="userName"></small>
+    </div>
+    <button class="logout-btn" onclick="cikisYap()">🚪 Çıkış</button>
+  </div>
+</div>
+
+<div class="container">
+  <div class="grid">
+    <!-- Sol Panel - Sefer Atama -->
+    <div>
+      <div class="card">
+        <h3>➕ Yeni Sefer Ata</h3>
+        
+        <div class="form-group">
+          <label>🚌 Hat</label>
+          <select id="hat" onchange="hatKontrol()">
+            <option value="1">1 - Üniversite Ring</option>
+            <option value="30">30 - Bahçeşehir Ring</option>
+            <option value="12">12 - Yeşiltepe - Otogar - Jandarma</option>
+            <option value="25">25 - Sarayyeri - Otogar</option>
+            <option value="26">26 - Akşemsettin - Otogar</option>
+            <option value="46">46 - Mamure - Otogar</option>
+            <option value="43">43 - Düzce Üniversitesi - Bahçeşehir</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>↔️ Yön</label>
+          <select id="yon" onchange="saatleriYukle()">
+            <option value="gidis">Gidiş</option>
+            <option value="donus">Dönüş</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>🚍 Araç</label>
+          <select id="arac">
+            <option>Mavi Karsan Atak</option>
+            <option>Kırmızı Karsan Atak</option>
+            <option>TCV Karat</option>
+            <option>MAN Lions City G</option>
+            <option>Mercedes Benz Conecto 2024</option>
+            <option>Otokar Sultan</option>
+            <option>BMC Procity TR</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>👤 Şoför</label>
+          <select id="sofor"></select>
+        </div>
+
+        <div class="form-group">
+          <label>🕐 Saatler (Seçiniz)</label>
+          <div class="saatler" id="saatler"></div>
+        </div>
+
+        <button class="btn btn-primary" onclick="seferAta()">✅ Sefer Ata</button>
+        <button class="btn btn-danger" onclick="tumSeferleriSil()">🗑️ Tüm Seferleri Sil</button>
+      </div>
+    </div>
+
+    <!-- Sağ Panel - Sefer Listesi -->
+    <div>
+      <div class="card">
+        <h3>📊 Sefer Listesi</h3>
+        <div class="tables">
+          <div>
+            <h4 style="color:#667eea; margin-bottom:10px">➡️ Gidiş Seferleri</h4>
+            <table id="gidisTablosu">
+              <thead>
+                <tr>
+                  <th>Hat</th>
+                  <th>Saat</th>
+                  <th>Şoför</th>
+                  <th>Durum</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+
+          <div>
+            <h4 style="color:#667eea; margin-bottom:10px">⬅️ Dönüş Seferleri</h4>
+            <table id="donusTablosu">
+              <thead>
+                <tr>
+                  <th>Hat</th>
+                  <th>Saat</th>
+                  <th>Şoför</th>
+                  <th>Durum</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// Giriş kontrolü
+let currentUser = JSON.parse(localStorage.getItem("currentUser"));
+if (!currentUser || (currentUser.role !== "amir" && currentUser.role !== "owner")) {
+  alert("❌ Bu sayfaya erişim yetkiniz yok!");
+  window.location.href = "index.html";
+} else {
+  document.getElementById("userName").textContent = currentUser.ad || currentUser.user;
+}
+
+const hatlar = {
+  "1": "Üniversite Ring",
+  "30": "Bahçeşehir Ring",
+  "12": "Yeşiltepe - Otogar - Jandarma",
+  "25": "Sarayyeri - Otogar",
+  "26": "Akşemsettin - Otogar",
+  "46": "Mamure - Otogar",
+  "43": "Düzce Üniversitesi - Bahçeşehir"
+};
+
+let secilenSaatler = [];
+
+// Şoförleri yükle
+function soforleriYukle() {
+  const users = JSON.parse(localStorage.getItem("users")) || [];
+  const soforler = users.filter(u => u.role === "sofor");
+  const select = document.getElementById("sofor");
+  
+  select.innerHTML = "";
+  
+  if (soforler.length === 0) {
+    select.innerHTML = '<option>Şoför bulunamadı</option>';
+    return;
+  }
+  
+  soforler.forEach(s => {
+    select.innerHTML += `<option value="${s.ad}">${s.ad}</option>`;
+  });
+}
+
+// Hat kontrolü (1 ve 30 sadece gidiş)
+function hatKontrol() {
+  const hat = document.getElementById("hat").value;
+  const yon = document.getElementById("yon");
+  
+  if (hat === "1" || hat === "30") {
+    yon.value = "gidis";
+    yon.disabled = true;
+  } else {
+    yon.disabled = false;
+  }
+  
+  saatleriYukle();
+}
+
+// Saatleri yükle
+function saatleriYukle() {
+  const saatlerDiv = document.getElementById("saatler");
+  const hat = document.getElementById("hat").value;
+  const yon = document.getElementById("yon").value;
+  const seferler = JSON.parse(localStorage.getItem("seferler")) || [];
+  
+  saatlerDiv.innerHTML = "";
+  secilenSaatler = [];
+  
+  for (let h = 5; h < 24; h++) {
+    for (let m = 0; m < 60; m += 5) {
+      const saat = `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}`;
+      
+      // Bu saat bu hat ve yönde kullanılmış mı?
+      const kullanilmis = seferler.find(s => 
+        s.saat === saat && 
+        s.hat === hat && 
+        s.yon === yon
+      );
+      
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "saat-btn";
+      
+      if (kullanilmis) {
+        btn.classList.add("used");
+        btn.innerHTML = `${saat}<small>${kullanilmis.sofor}</small>`;
+        btn.disabled = true;
+      } else {
+        btn.textContent = saat;
+        btn.onclick = () => {
+          btn.classList.toggle("active");
+          if (secilenSaatler.includes(saat)) {
+            secilenSaatler = secilenSaatler.filter(s => s !== saat);
+          } else {
+            secilenSaatler.push(saat);
+          }
+        };
+      }
+      
+      saatlerDiv.appendChild(btn);
+    }
+  }
+}
+
+// Sefer ata
+function seferAta() {
+  if (secilenSaatler.length === 0) {
+    alert("❌ Lütfen en az bir saat seçin!");
+    return;
+  }
+  
+  const hat = document.getElementById("hat").value;
+  const yon = document.getElementById("yon").value;
+  const arac = document.getElementById("arac").value;
+  const sofor = document.getElementById("sofor").value;
+  
+  if (!sofor || sofor === "Şoför bulunamadı") {
+    alert("❌ Lütfen şoför seçin!");
+    return;
+  }
+  
+  const seferler = JSON.parse(localStorage.getItem("seferler")) || [];
+  
+  secilenSaatler.forEach(saat => {
+    seferler.push({
+      id: Date.now() + Math.random(),
+      hat: hat,
+      yon: yon,
+      arac: arac,
+      sofor: sofor,
+      saat: saat,
+      durum: "Bekliyor"
+    });
+  });
+  
+  localStorage.setItem("seferler", JSON.stringify(seferler));
+  
+  alert(`✅ ${secilenSaatler.length} sefer başarıyla atandı!`);
+  secilenSaatler = [];
+  saatleriYukle();
+  seferleriListele();
+}
+
+// Seferleri listele
+function seferleriListele() {
+  const seferler = JSON.parse(localStorage.getItem("seferler")) || [];
+  const gidisTbody = document.querySelector("#gidisTablosu tbody");
+  const donusTbody = document.querySelector("#donusTablosu tbody");
+  
+  gidisTbody.innerHTML = "";
+  donusTbody.innerHTML = "";
+  
+  const gidisSeferler = seferler.filter(s => s.yon === "gidis").sort((a, b) => a.saat.localeCompare(b.saat));
+  const donusSeferler = seferler.filter(s => s.yon === "donus").sort((a, b) => a.saat.localeCompare(b.saat));
+  
+  if (gidisSeferler.length === 0) {
+    gidisTbody.innerHTML = '<tr><td colspan="4" style="color:#999">Henüz gidiş seferi yok</td></tr>';
+  } else {
+    gidisSeferler.forEach(s => {
+      const hatAdi = hatlar[s.hat] || s.hat;
+      const durumBadge = s.durum === "Tamamlandı" 
+        ? '<span class="badge badge-tamamlandi">✅ Tamamlandı</span>'
+        : '<span class="badge badge-bekliyor">⏳ Bekliyor</span>';
+      
+      gidisTbody.innerHTML += `
+        <tr>
+          <td>${hatAdi}</td>
+          <td><strong>${s.saat}</strong></td>
+          <td>${s.sofor}</td>
+          <td>${durumBadge}</td>
+        </tr>
+      `;
+    });
+  }
+  
+  if (donusSeferler.length === 0) {
+    donusTbody.innerHTML = '<tr><td colspan="4" style="color:#999">Henüz dönüş seferi yok</td></tr>';
+  } else {
+    donusSeferler.forEach(s => {
+      const hatAdi = hatlar[s.hat] || s.hat;
+      const durumBadge = s.durum === "Tamamlandı" 
+        ? '<span class="badge badge-tamamlandi">✅ Tamamlandı</span>'
+        : '<span class="badge badge-bekliyor">⏳ Bekliyor</span>';
+      
+      donusTbody.innerHTML += `
+        <tr>
+          <td>${hatAdi}</td>
+          <td><strong>${s.saat}</strong></td>
+          <td>${s.sofor}</td>
+          <td>${durumBadge}</td>
+        </tr>
+      `;
+    });
+  }
+}
+
+// Tüm seferleri sil
+function tumSeferleriSil() {
+  if (!confirm("⚠️ TÜM SEFERLER SİLİNECEK! Emin misiniz?")) return;
+  
+  localStorage.removeItem("seferler");
+  alert("✅ Tüm seferler silindi!");
+  saatleriYukle();
+  seferleriListele();
+}
+
+function cikisYap() {
+  localStorage.removeItem("currentUser");
+  window.location.href = "index.html";
+}
+
+// Sayfa yüklendiğinde
+soforleriYukle();
+hatKontrol();
+seferleriListele();
+</script>
+
+</body>
+</html>
