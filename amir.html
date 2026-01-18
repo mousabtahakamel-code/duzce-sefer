@@ -353,7 +353,11 @@ tr:hover {
 <script>
 // Giriş kontrolü
 let currentUser = JSON.parse(localStorage.getItem("currentUser"));
-if (!currentUser || (currentUser.role !== "amir" && currentUser.role !== "owner")) {
+
+if (!currentUser) {
+  alert("❌ Lütfen giriş yapın!");
+  window.location.href = "index.html";
+} else if (currentUser.role !== "amir" && currentUser.role !== "owner") {
   alert("❌ Bu sayfaya erişim yetkiniz yok!");
   window.location.href = "index.html";
 } else {
